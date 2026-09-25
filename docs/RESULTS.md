@@ -1,6 +1,8 @@
 # xiaojev — Full Results
 
-For the current v4 browser/RAG release, see [V4_REPAIR.md](V4_REPAIR.md). The tables below retain the historical v1–v3 experiments.
+For the current v4 browser/RAG release, see [V4_REPAIR.md](V4_REPAIR.md).
+Sections 1–7 retain the historical v1–v3 experiments; sections 8–11 add the v4
+acceptance, the answerability gate, and the 4B LoRA scaling line (finding 7).
 
 All numbers below are computed by the scripts in this repository and stored as
 raw JSON under `results/`. File names are given for each table so every cell
@@ -13,6 +15,13 @@ Notes on names:
   1:1 mix of probability tasks and NanoJev soft game decisions.
 - **v3** = xiaojev v3, same architecture, trained 2500 steps from scratch on a
   weighted three-source mix (probability 0.34 : game 0.33 : semantic 0.33).
+- **v4** = xiaojev v4, same architecture, trained 2500 steps from scratch on an
+  equal five-source mix (probability / game / semantic / browser / RAG = 0.2
+  each). `ckpt/v4_browser` = browser-adapted derivative of v4 (see
+  [V4_REPAIR.md](V4_REPAIR.md)).
+- **4B LoRA** = frozen Qwen3-4B base + LoRA rank 32 + the same scoring head,
+  trained 2500 steps on the identical five-source data (section 10).
+  `ckpt/qwen3_4b_browser/step50` = its browser-adapted derivative (section 11).
 - **vcdm** is the internal codename for the xiaojev checkpoints; it appears in
   raw artifacts (`results/compare_*.json`, engine names in `comparison/`).
 - Zero-shot = untuned Qwen3-0.6B, candidates scored by label-token logprob
@@ -254,6 +263,191 @@ paths and are not committed).
 Operation-level understanding arrived with v3; web-interaction common sense
 (autocomplete confirmation, filter toggles) has not — a data-coverage gap
 earmarked for P4 browser-domain training data.
+
+## 8. v4: five-domain mix, acceptance wins and acceptance failures
+
+v4 = 2500 steps from scratch on an equal five-source mix
+(probability/game/semantic/browser/RAG = 0.2 each, 121,597 train rows, 24
+questions/step, seed 0). Raw: `results/v4/*.json`. The browser and RAG
+repairs that closed the two acceptance failures below are documented in
+[V4_REPAIR.md](V4_REPAIR.md).
+
+### 8a. Five offline domains and the frozen game cohort
+
+| Domain | Split | v4 acc / TV | Reference |
+|---|---|---|---|
+| Probability | test (8,145) | 85.62% / 0.1264 | v3: 87.97% / 0.1045 |
+| Probability | OOD (8,896) | 75.38% / 0.1912 | v3: 75.34% / 0.1510 |
+| Semantic | test (2,384) | 83.52% / 0.1990 | v3: 85.99% |
+| Browser (synthetic) | test | 96.02% / 0.0328 | — (new domain) |
+| RAG hard-negative | test | 89.80% / 0.1046 | — (new domain) |
+| Game decisions | test | 86.74% / 0.1446 | — |
+
+| Game cohort (548 frozen cases, macro) | v2 | v3 | **v4** | NanoJev | Jev |
+|---|---|---|---|---|---|
+| test | 48.78% | 42.16% | **53.26%** | 66.85% | 65.39% |
+| ood | 28.72% | 15.76% | **26.72%** | 45.47% | 43.72% |
+
+21,745 controller transitions re-verified with NanoJev's verifier; per-domain
+single-decision latency p50 27.84–69.49 ms (one RTX 3090, warm, tokenization
+included). Offline probability/semantic accuracy dipped slightly vs v3 —
+adding two domains with the same capacity is not free.
+
+### 8b. Two acceptance targets were missed (and then repaired)
+
+1. **Browser fixture 0/2.** Both runs clicked "Find stays" 15 times in a loop
+   (`results/v4/fixture_summary.json`). The 96.02% synthetic-test accuracy did
+   not transfer to the real page — a serialization gap between the generator's
+   states and the real DOM. Repaired by serialization fixes + real-state
+   counterfactual data: 4/4, see [V4_REPAIR.md](V4_REPAIR.md).
+2. **Standalone dense-cascade rerank below baseline.** Sorting dense top-50
+   candidates by v4 relevance score *loses* ranking information: MuSiQue 293
+   non-training questions, dense R@5 70.68% vs v4-rerank 66.10%; independent
+   test101: 73.35% vs 65.35%. Repaired by weighted reciprocal-rank fusion
+   (dense 0.6 + v4 0.4): test101 R@5 77.31%, see [V4_REPAIR.md](V4_REPAIR.md).
+
+## 9. Answerability gating end to end (v3, MuSiQue)
+
+Full report: [`rag_eval/GATE_REPORT.md`](../rag_eval/GATE_REPORT.md); code:
+`rag_eval/gate.py` + `run_gate.py`; all numbers: `rag_eval/gate_metrics.json`.
+
+Pipeline: BM25 top-50 → v3 relevance rerank → top-5 → v3 answerability gate.
+P(answerable) < τ triggers one widened retry round (top-100); still < τ →
+refuse without calling the reader. τ = 0.65 was chosen on 98 calibration
+questions by requiring answered-set precision ≥ 0.90 (achieved 92.3%), then
+frozen. Unanswerable variants are **synthetic**: the local MuSiQue gold set is
+fully answerable, so gold documents were removed from every candidate stage.
+
+| Test split (101 questions/variant) | nogate | gate |
+|---|---|---|
+| Hallucination rate on unanswerable | 32.7% | **1.0%** |
+| EM / F1, answered answerable questions | 0.168 / 0.269 | **0.214 / 0.394** |
+| Reader prompt tokens (202-run mixed stream) | 187,812 | **30,667 (−83.7%)** |
+| Mean per-question latency (mixed stream) | ≈ 5.6 s | **≈ 1.8 s** |
+| Answerable questions kept | 100% | 27.7% |
+
+Refusal quality: recall 96.0%, precision 57.1%; gate AUC 0.766–0.808 across
+splits. **The coverage bottleneck is not the gate but the BM25 first stage's
+top-5 evidence completeness (All@5 ≈ 0.21)** — most refusals are correct
+refusals of genuinely under-supplied questions; a stronger first stage should
+raise coverage and precision together.
+
+## 10. Finding 7 — the boundary of scaling (4B LoRA)
+
+Same five-source data, same 2500 steps, same loss, fixed step2500 checkpoint
+(no test-set selection): frozen Qwen3-4B base (revision `1cfa9a7`) + LoRA
+rank 32 / alpha 64 on q/k/v/o and gate/up/down, fp32 scoring head, 66.07M
+trainable of 4,088.5M parameters, microbatch 4096 padded tokens for 24 GB.
+Raw: `results/lora4b/`.
+
+### 10a. Four of five offline domains improve — and games reach home-turf parity
+
+| Domain (test) | v4 (0.6B full FT) acc / TV | 4B LoRA acc / TV |
+|---|---|---|
+| Probability (8,145) | 85.62% / 0.1264 | **90.28% / 0.0780** |
+| Probability OOD, raw argmax (8,896) | 75.38% / 0.1912 | 71.01% / **0.0916** |
+| Probability OOD, **tie-corrected** | 81.04% | **92.45%** |
+| Semantic (2,384) | 83.52% / 0.1990 | **89.18% / 0.1246** |
+| Browser synthetic | 96.02% / **0.0328** | 95.48% / 0.0335 (tie) |
+| RAG hard-negative | 89.80% / 0.1046 | **91.69% / 0.0829** |
+| Game decisions | 86.74% / 0.1446 | **87.42% / 0.1258** |
+
+| 548 frozen game cohort, macro | 4B LoRA | Jev | NanoJev |
+|---|---|---|---|
+| test | **65.31%** | 65.39% | 66.85% |
+| ood | **41.30%** | 43.72% | 45.47% |
+
+A 0.6B-class research model, scaled to 4B LoRA, **ties the closed-source Jev
+API and NanoJev on their own frozen home-turf cohort**. The largest gain is
+Doom basic (test 51/128 → 128/128, OOD 45/128 → 128/128); it is not uniform
+across games.
+
+**OOD tie-correction (why we report two numbers):** the legacy metric scores
+`p.argmax() == t.argmax()`, which credits only the first of tied-optimal
+positions; 44.24% of card questions have tied maxima. Accepting all tied
+positions (plus TV/Brier/NLL: 0.0916/0.0371/0.6398 vs v4's
+0.1912/0.1177/0.7392) shows the raw-argmax "regression" (75.38 → 71.01) is a
+metric artifact, not a capability drop. Raw numbers are kept above for
+traceability; ECE computed from argmax correctness is likewise not a pure
+calibration measure on random events.
+
+### 10b. Standalone rerank: first time above dense on nontrain — but not on test
+
+| Set (MuSiQue, fixed candidates) | Dense R@5 | 4B LoRA R@5 | Delta |
+|---|---|---|---|
+| nontrain (293, incl. calibration) | 70.68% | **73.07%** | +2.39 pp, 95% CI [−0.94, +5.66] |
+| independent test101 | 73.35% | 72.03% | **−1.32 pp**, 95% CI [−7.26, +4.29] |
+
+Against v4 the gain is solid (+6.68 pp on test101, 95% CI [+1.82, +11.80]).
+Score saturation no longer explains the remaining gap (P(yes)>0.99 share:
+v4 2.29%, 4B 2.40%, vs v3's ~19.8%). The per-question audit points at
+train/inference objective mismatch (pointwise yes/no training vs 50-candidate
+deployment ranking) and input truncation (first-300-chars snippets hide 17.3%
+of decomposed sub-answers). QA with the same reader (top-4): nontrain EM
+32.08 / F1 42.23; test101 EM 29.70 / F1 40.00 — 12 questions improved vs
+dense, 18 regressed, bootstrap CI crosses zero: no stable QA gain claimed.
+
+### 10c. The browser fixture does not move: 0/4
+
+Unified 4B weights pass **0/4** on the hotel fixture — and the original v4,
+re-run on the *same* repaired runtime as a control, also scores 0/4. The
+per-trajectory audit shows the model *recognizes* the right targets (Design
+target scored ~99.8–99.9%) but assigns the SELECT operation only ~16–20% —
+an operation-scheduling defect rooted in training-label quality and state
+serialization, not in capacity. Section 11 shows the data fix that does move
+this number.
+
+### 10d. Interpretation boundaries (read before citing)
+
+- **Scale and finetuning method changed together** (0.6B full fine-tune vs 4B
+  LoRA, different learning rate): gains cannot be attributed to capacity
+  alone.
+- The offline `rag_test` split is **not** unseen-question generalization: all
+  77 of its MuSiQue questions also appear in the *semantic* training split.
+  The corpus-level test101 (section 10b) is unaffected by this overlap.
+- Gate AUC figures used synthetic gold-removal unanswerable samples; reader
+  and GPU latencies were measured on a shared server.
+- Resume/reload checks: step-3 loss differs by 0.000851 between two
+  initializations; no bit-level BF16 reproducibility is claimed
+  (`results/lora4b/resume_comparison.json`).
+
+## 11. 4B browser repair: the data fix, not the capacity fix
+
+Same recipe as the 0.6B v4 browser repair ([V4_REPAIR.md](V4_REPAIR.md)),
+applied to the 4B LoRA checkpoint — only LoRA adapters, normalization, and
+the scoring head train (the frozen-4B architecture is also what fits 24 GB):
+
+1. **Stage 1 (synthetic):** from `ckpt/qwen3_4b_lora_v1/step2500`, 150 steps
+   on `browser_mixed.jsonl` → `ckpt/qwen3_4b_browser_synth/step150`
+   (dev acc 1.0, n=300).
+2. **Stage 2 (real-DOM counterfactual):** 50 steps on `browser_dom.jsonl`
+   (900 actually rendered counterfactual fixture states from the v4 repair)
+   → **`ckpt/qwen3_4b_browser/step50`** (dev acc 1.0, n=150; selection used
+   fixed dev rows only — acceptance runs never select a checkpoint).
+   SHA256 manifest verified, 13 files, no mismatches
+   (`results/lora4b/checkpoint_integrity_4b_browser.json`).
+
+Final acceptance (`results/lora4b/browser_4b_repair_final_summary.json`):
+
+| Task | Actions | Decision / text calls | Independent page verification |
+|---|---|---|---|
+| Lisbon / Design / Free cancellation / Casa Flora, repeat 1 | 5 | 6 / 1 | passed |
+| Same original task, repeat 2 | 5 | 6 / 1 | passed |
+| Copenhagen / Design / Free cancellation / The Glasshouse | 5 | 6 / 1 | passed |
+| Lisbon / Nature / Free cancellation off / Serra Lodge | 4 | 5 / 1 | passed |
+
+Every run follows the correct sequence (Destination → Find stays → category
+filter → cancellation toggle → open the named hotel). **Scope:** same local
+fixture as the 0.6B repair — a regression validation whose cases participated
+in deployment selection, not an independent general-web benchmark.
+
+**This is finding 7 (the boundary of scaling):** 0.6B → 4B lifts every domain
+and ties Jev on games, yet the browser fixture stays at 0/4 — because the
+bottleneck was the sim-to-real serialization gap in the training data, not
+capacity. Fix the data (shared serialization + real-state counterfactuals)
+and *both* sizes pass 4/4: 0.6B at `ckpt/v4_browser_dom/step100`, 4B at
+`ckpt/qwen3_4b_browser/step50`. Scale helps where data coverage is already
+aligned; it cannot substitute for that alignment.
 
 ## Reproducibility notes
 

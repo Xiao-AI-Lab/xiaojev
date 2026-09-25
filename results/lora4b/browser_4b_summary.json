@@ -1,0 +1,103 @@
+{
+  "checkpoint": "ckpt/qwen3_4b_lora_v1/step2500",
+  "successes": 0,
+  "n": 4,
+  "runs": [
+    {
+      "task": "original_1",
+      "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+      "verified": false,
+      "status": "blocked",
+      "error": null,
+      "actions": 10,
+      "decisions": 10,
+      "elapsed_ms": 47789,
+      "decision_calls": 10,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "Free cancellation",
+        "Find stays",
+        "View Casa Flora",
+        "forma.",
+        "View Casa Flora",
+        "forma.",
+        "forma.",
+        "forma.",
+        "forma."
+      ]
+    },
+    {
+      "task": "original_2",
+      "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+      "verified": false,
+      "status": "blocked",
+      "error": null,
+      "actions": 10,
+      "decisions": 10,
+      "elapsed_ms": 47720,
+      "decision_calls": 10,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "Free cancellation",
+        "Find stays",
+        "View Casa Flora",
+        "forma.",
+        "View Casa Flora",
+        "forma.",
+        "forma.",
+        "forma.",
+        "forma."
+      ]
+    },
+    {
+      "task": "other_city",
+      "goal": "Use the destination search and filters to find Design stays in Copenhagen with Free cancellation, then open The Glasshouse.",
+      "verified": false,
+      "status": "blocked",
+      "error": null,
+      "actions": 13,
+      "decisions": 13,
+      "elapsed_ms": 46392,
+      "decision_calls": 13,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "Free cancellation",
+        "Find stays",
+        "View The Glasshouse",
+        "forma.",
+        "forma.",
+        "forma.",
+        "Reading room",
+        "Find a stay",
+        "Reading room",
+        "Reading room",
+        "Reading room",
+        "Reading room"
+      ]
+    },
+    {
+      "task": "other_category",
+      "goal": "Use the destination search and filters to find Nature stays in Lisbon with Free cancellation turned off, then open Serra Lodge.",
+      "verified": false,
+      "status": "blocked",
+      "error": null,
+      "actions": 7,
+      "decisions": 7,
+      "elapsed_ms": 29371,
+      "decision_calls": 7,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "View Casa Flora",
+        "forma.",
+        "Free cancellation",
+        "forma.",
+        "forma.",
+        "forma."
+      ]
+    }
+  ]
+}

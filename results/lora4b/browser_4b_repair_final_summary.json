@@ -1,0 +1,82 @@
+{
+  "checkpoint": "ckpt/qwen3_4b_browser/step50",
+  "successes": 4,
+  "n": 4,
+  "runs": [
+    {
+      "task": "original_1",
+      "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+      "verified": true,
+      "status": "done",
+      "error": null,
+      "actions": 5,
+      "decisions": 6,
+      "elapsed_ms": 29346,
+      "decision_calls": 6,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "Find stays",
+        "Stay category \u2192 Design",
+        "Free cancellation",
+        "View Casa Flora"
+      ]
+    },
+    {
+      "task": "original_2",
+      "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+      "verified": true,
+      "status": "done",
+      "error": null,
+      "actions": 5,
+      "decisions": 6,
+      "elapsed_ms": 18652,
+      "decision_calls": 6,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "Find stays",
+        "Stay category \u2192 Design",
+        "Free cancellation",
+        "View Casa Flora"
+      ]
+    },
+    {
+      "task": "other_city",
+      "goal": "Use the destination search and filters to find Design stays in Copenhagen with Free cancellation, then open The Glasshouse.",
+      "verified": true,
+      "status": "done",
+      "error": null,
+      "actions": 5,
+      "decisions": 6,
+      "elapsed_ms": 18341,
+      "decision_calls": 6,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "Find stays",
+        "Stay category \u2192 Design",
+        "Free cancellation",
+        "View The Glasshouse"
+      ]
+    },
+    {
+      "task": "other_category",
+      "goal": "Use the destination search and filters to find Nature stays in Lisbon with Free cancellation turned off, then open Serra Lodge.",
+      "verified": true,
+      "status": "done",
+      "error": null,
+      "actions": 4,
+      "decisions": 5,
+      "elapsed_ms": 15483,
+      "decision_calls": 5,
+      "text_calls": 1,
+      "action_sequence": [
+        "Destination",
+        "Find stays",
+        "Stay category \u2192 Nature",
+        "View Serra Lodge"
+      ]
+    }
+  ]
+}

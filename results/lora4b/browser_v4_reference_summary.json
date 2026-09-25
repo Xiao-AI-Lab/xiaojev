@@ -1,0 +1,88 @@
+{
+  "checkpoint": "ckpt/v4",
+  "successes": 0,
+  "n": 4,
+  "runs": [
+    {
+      "task": "original_1",
+      "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+      "verified": false,
+      "status": "blocked",
+      "error": null,
+      "actions": 3,
+      "decisions": 3,
+      "elapsed_ms": 2281,
+      "decision_calls": 3,
+      "text_calls": 0,
+      "action_sequence": [
+        "Find a stay",
+        "Find a stay",
+        "Find a stay"
+      ]
+    },
+    {
+      "task": "original_2",
+      "goal": "Use the destination search and filters to find Design stays in Lisbon with Free cancellation, then open Casa Flora.",
+      "verified": false,
+      "status": "blocked",
+      "error": null,
+      "actions": 3,
+      "decisions": 3,
+      "elapsed_ms": 2231,
+      "decision_calls": 3,
+      "text_calls": 0,
+      "action_sequence": [
+        "Find a stay",
+        "Find a stay",
+        "Find a stay"
+      ]
+    },
+    {
+      "task": "other_city",
+      "goal": "Use the destination search and filters to find Design stays in Copenhagen with Free cancellation, then open The Glasshouse.",
+      "verified": false,
+      "status": "ready",
+      "error": "RuntimeError('15-action acceptance budget exceeded')",
+      "actions": 15,
+      "decisions": 15,
+      "elapsed_ms": 8862,
+      "decision_calls": 15,
+      "text_calls": 0,
+      "action_sequence": [
+        "View The Glasshouse",
+        "forma.",
+        "View The Glasshouse",
+        "forma.",
+        "View The Glasshouse",
+        "forma.",
+        "View The Glasshouse",
+        "forma.",
+        "View The Glasshouse",
+        "forma.",
+        "View The Glasshouse",
+        "forma.",
+        "View The Glasshouse",
+        "forma.",
+        "View The Glasshouse"
+      ]
+    },
+    {
+      "task": "other_category",
+      "goal": "Use the destination search and filters to find Nature stays in Lisbon with Free cancellation turned off, then open Serra Lodge.",
+      "verified": false,
+      "status": "blocked",
+      "error": null,
+      "actions": 4,
+      "decisions": 4,
+      "elapsed_ms": 3023,
+      "decision_calls": 4,
+      "text_calls": 0,
+      "action_sequence": [
+        "Find stays",
+        "Find stays",
+        "Find stays",
+        "Find stays"
+      ]
+    }
+  ]
+}

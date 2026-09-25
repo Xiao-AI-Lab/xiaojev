@@ -1,0 +1,9 @@
+{
+  "checkpoint": "ckpt/qwen3_4b_browser/step50",
+  "step": 50,
+  "selection": "highest accuracy on fixed dev rows; ties prefer earlier step",
+  "dev_accuracy": 1.0,
+  "dev_n": 150,
+  "data": "local_runs/v4_repair_20260924/browser_dom.jsonl",
+  "initialized_from": "ckpt/qwen3_4b_browser_synth/step150"
+}

@@ -1,0 +1,39 @@
+{
+  "nontrain_questions": 293,
+  "subanswers_len_ge3": 756,
+  "present_in_full_gold_passage_including_title": 756,
+  "absent_from_300char_snippet_including_title": 131,
+  "examples": [
+    {
+      "qid": "4hop1__39871_314549_131976_90181",
+      "question": "What is the deepest part of the ocean by the state where Main Street Station is located?",
+      "subquestion": "Along with Williamsburg, what city's rail traffic uses the Main Street Station?",
+      "subanswer": "Newport News",
+      "title": "Richmond, Virginia",
+      "snippet": "[richmond, virginia] the richmond area also has two railroad stations served by amtrak. each station receives regular service from north of richmond including washington, d.c., philadelphia, and new york. the suburban staples mill road station is located on a major north-south freight line and receives all service to an",
+      "answer_position": 383,
+      "full_excerpt": " all service to and from all points south including, raleigh, durham, savannah, newport news, williamsburg and florida. richmond's only railway station located within the c"
+    },
+    {
+      "qid": "4hop1__39871_314549_131976_90181",
+      "question": "What is the deepest part of the ocean by the state where Main Street Station is located?",
+      "subquestion": "what is the deepest part of #3",
+      "subanswer": "Milwaukee Deep",
+      "title": "Puerto Rico Trench",
+      "snippet": "[puerto rico trench] the puerto rico trench is located on the boundary between the caribbean sea and the atlantic ocean. the oceanic trench is associated with a complex transition between the lesser antilles subduction zone to the south and the major transform fault zone or plate boundary, which extends west between cub",
+      "answer_position": 510,
+      "full_excerpt": " mi) long and has a maximum depth of 8,648 metres (28,373 ft) or 5.373 miles at milwaukee deep, which is the deepest point in the atlantic ocean and the deepest point not in "
+    },
+    {
+      "qid": "2hop__88632_67668",
+      "question": "In Batman Under the Red Hood, who does the actor of Barney Stinson from How I Met Your Mother play?",
+      "subquestion": "who does #1 play in batman under the red hood",
+      "subanswer": "Nightwing / Dick Grayson",
+      "title": "Batman: Under the Red Hood",
+      "snippet": "[batman: under the red hood] batman: under the red hood is a 2010 american animated superhero direct - to - video film produced by warner bros. animation and released by warner home video. it is the eighth feature in the dc universe animated original movies series. it was released on july 27, 2010. the film stars bruce greenwoo",
+      "answer_position": 451,
+      "full_excerpt": "s the red hood / jason todd, john dimaggio as the joker, neil patrick harris as nightwing / dick grayson, jason isaacs as ra's al ghul, and wade williams as black mask. the screenplay "
+    }
+  ],
+  "note": "Literal subanswer matching diagnoses input truncation only; absence is not proof the answer cannot be inferred."
+}

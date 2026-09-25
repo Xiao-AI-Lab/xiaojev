@@ -22,6 +22,7 @@ autoregressive text generation.
 | Browser actions | Local hotel tasks, independently checked final pages | **4/4** |
 | RAG retrieval | MuSiQue test R@5, 101 questions, dense + xiaojev fusion | **77.31%** |
 | RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **36.63% / 46.60%** |
+| RAG answerability gate | Hallucination rate on unanswerable questions; reader prompt tokens | **32.7% → 1.0%; −83.7%** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |
@@ -31,9 +32,15 @@ Browser results use the separately adapted browser checkpoint and cover three
 local fixture tasks, including one repeated task. The fixture layout is present
 in adaptation data, and these cases participate in checkpoint selection.
 RAG retrieval uses the v4 checkpoint with rank fusion; QA answers come from a
-separate Qwen reader. Other model metrics use v4. Lower TV means better
-probability calibration. Latency measures warmed-up model inference, including
-tokenization, and excludes browser execution and the QA reader.
+separate Qwen reader. The answerability gate uses v3 with a threshold chosen
+on 98 calibration questions and then frozen; it trades answerable-question
+coverage (27.7% kept — bottlenecked by the BM25 first stage's evidence
+completeness, not by the gate) for a 33x hallucination reduction, and its
+unanswerable cases are synthetic (gold documents removed), because the local
+gold set is fully answerable. Details: [gate report](rag_eval/GATE_REPORT.md).
+Other model metrics use v4. Lower TV means better probability calibration.
+Latency measures warmed-up model inference, including tokenization, and
+excludes browser execution and the QA reader.
 
 Reproduce the RAG ranking results offline, without model downloads:
 
@@ -54,6 +61,37 @@ analytic targets, semantic and RAG tasks use QA gold labels, browser tasks use
 programmatic interaction labels, and game tasks use teacher or expert policies.
 Probe results, calibration measurements, and training studies are recorded in
 [the research report](docs/RESULTS.md).
+
+## Scaling study: the boundary of scale (4B LoRA)
+
+Training the identical five-source data the same way on frozen Qwen3-4B + LoRA
+rank 32 (2500 steps, fixed final checkpoint) lifts every offline domain and
+reaches home-turf parity on games — **except** the real browser fixture:
+
+| | 0.6B v4 | 4B LoRA |
+|---|---:|---:|
+| Probability test accuracy | 85.62% | **90.28%** |
+| Probability OOD accuracy (tie-corrected) | 81.04% | **92.45%** |
+| Semantic test accuracy | 83.52% | **89.18%** |
+| RAG hard-negative accuracy | 89.80% | **91.69%** |
+| 548-case game macro, test / OOD | 53.26% / 26.72% | **65.31% / 41.30%** |
+| — for reference, on that same cohort | Jev API: 65.39% / 43.72% | NanoJev: 66.85% / 45.47% |
+| Standalone rerank R@5, independent test | 65.35% | 72.03% (dense: 73.35%) |
+| Real browser fixture (unified weights) | 0/4 | 0/4 |
+| Real browser fixture (after the data fix) | 4/4 | 4/4 |
+
+This is the research line's **seventh finding — the boundary of scaling**
+(findings 1–6: [docs/RESULTS.md](docs/RESULTS.md)). Scale helps wherever
+training data and deployment are already aligned; it cannot fix misalignment.
+The browser bottleneck was the serialization gap between synthetic training
+states and the real DOM, not capacity: after repairing serialization and
+adding real-state counterfactual data, *both* sizes pass 4/4 (0.6B at
+`ckpt/v4_browser_dom/step100`, 4B at `ckpt/qwen3_4b_browser/step50`).
+Caveats: model size and finetuning method changed together (full fine-tune vs
+LoRA), so gains are not attributable to capacity alone; the fixture 4/4 is a
+regression on the same local fixture that participated in deployment
+selection, not an independent general-web benchmark. Full tables and the
+per-question audit: [docs/RESULTS.md](docs/RESULTS.md) sections 10–11.
 
 ## Architecture
 
@@ -190,14 +228,19 @@ using 5, 5, 5, and 4 actions. Actual URLs and filter text were checked. See the
 ## Full results
 
 Current v4 metrics, checkpoint selection, validation limits, and evidence links
-are in **[docs/V4_REPAIR.md](docs/V4_REPAIR.md)**. Historical v1–v3 tables remain
-in [docs/RESULTS.md](docs/RESULTS.md). Summary JSONs live in `results/`; local
-fixture traces and frozen document-ranking inputs are included.
+are in **[docs/V4_REPAIR.md](docs/V4_REPAIR.md)**. The answerability gate is in
+**[rag_eval/GATE_REPORT.md](rag_eval/GATE_REPORT.md)**; the 4B LoRA scaling
+study and 4B browser repair are in [docs/RESULTS.md](docs/RESULTS.md)
+sections 10–11, alongside the historical v1–v3 tables. Summary JSONs live in
+`results/`; local fixture traces and frozen document-ranking inputs are
+included.
 
 ## Checkpoints
 
 - `ckpt/v4`: probability, games, semantic decisions, browser decisions, and hard-negative RAG training.
 - `ckpt/v4_browser_dom/step100`: browser-adapted weights; `ckpt/v4_browser` is its local alias.
+- `ckpt/qwen3_4b_lora_v1/step2500`: 4B LoRA five-domain scaling-study weights.
+- `ckpt/qwen3_4b_browser/step50`: 4B browser-adapted weights (from the scaling checkpoint).
 
 Model binaries are not hosted in this Git repository and a public weight
 download is not yet available. The release includes checkpoint hashes,

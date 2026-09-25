@@ -1,0 +1,25 @@
+{
+  "exact_equivalence": false,
+  "loss_tolerance_1e_minus4_passed": false,
+  "comparison": {
+    "1": {
+      "loss_abs_error": 0.0,
+      "gradient_norm_abs_error": 0.0002155303955078125,
+      "n_paths_equal": true,
+      "learning_rates_equal": true
+    },
+    "2": {
+      "loss_abs_error": 0.0,
+      "gradient_norm_abs_error": 0.0004208087921142578,
+      "n_paths_equal": true,
+      "learning_rates_equal": true
+    },
+    "3": {
+      "loss_abs_error": 0.0008508631338675077,
+      "gradient_norm_abs_error": 0.02404177188873291,
+      "n_paths_equal": true,
+      "learning_rates_equal": true
+    }
+  },
+  "interpretation": "Separate smoke and formal initializations already have differing gradient norms before resumption. This comparison is not an isolated test of checkpoint resume; do not claim bitwise reproducibility. Actual checkpoint reload prediction metrics match exactly at both step2 and step3 (see smoke_check_step*.json)."
+}

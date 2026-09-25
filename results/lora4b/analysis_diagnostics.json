@@ -1,0 +1,1223 @@
+{
+  "probability_ood": {
+    "v4": {
+      "overall": {
+        "n": 8896,
+        "strict_acc": 0.7538219424460432,
+        "tie_aware_acc": 0.8103642086330936,
+        "regret": 0.08671920574488705,
+        "tv": 0.191183487785551,
+        "target_tied": 0.28619604316546765
+      },
+      "card": {
+        "n": 5000,
+        "strict_acc": 0.7534,
+        "tie_aware_acc": 0.8208,
+        "regret": 0.080401766011766,
+        "tv": 0.18841562413286714,
+        "target_tied": 0.4424
+      },
+      "card/tied": {
+        "n": 2212,
+        "strict_acc": 0.8476491862567812,
+        "tie_aware_acc": 1.0,
+        "regret": 0.0,
+        "tv": 0.17454435932790835,
+        "target_tied": 1.0
+      },
+      "card/unique": {
+        "n": 2788,
+        "strict_acc": 0.6786226685796269,
+        "tie_aware_acc": 0.6786226685796269,
+        "regret": 0.14419255023630922,
+        "tv": 0.19942108960939825,
+        "target_tied": 0.0
+      },
+      "dice_sum": {
+        "n": 3896,
+        "strict_acc": 0.7543634496919918,
+        "tie_aware_acc": 0.7969712525667351,
+        "regret": 0.09482680293831755,
+        "tv": 0.19473567419813295,
+        "target_tied": 0.08572895277207392
+      },
+      "dice_sum/unique": {
+        "n": 3562,
+        "strict_acc": 0.8222908478382931,
+        "tie_aware_acc": 0.8222908478382931,
+        "regret": 0.10040080308542329,
+        "tv": 0.1866695313039387,
+        "target_tied": 0.0
+      },
+      "dice_sum/tied": {
+        "n": 334,
+        "strict_acc": 0.029940119760479042,
+        "tie_aware_acc": 0.5269461077844312,
+        "regret": 0.035381927117986274,
+        "tv": 0.2807584316505877,
+        "target_tied": 1.0
+      },
+      "tie_examples": [
+        {
+          "id": "card_000002",
+          "state": "一副完整的 52 张扑克牌，红桃、黑桃、方块、梅花各 A 至 K 共 13 张。洗匀后随机抽出一张。",
+          "candidates": [
+            "yes",
+            "no"
+          ],
+          "target": [
+            0.5,
+            0.5
+          ],
+          "prediction": [
+            0.282196,
+            0.717804
+          ]
+        },
+        {
+          "id": "card_000003",
+          "state": "一副标准扑克牌，共 52 张：四种花色（红桃、黑桃、方块、梅花）各 13 张（A 到 K）。洗匀后随机抽出一张。",
+          "candidates": [
+            "黑色",
+            "红色"
+          ],
+          "target": [
+            0.5,
+            0.5
+          ],
+          "prediction": [
+            0.465281,
+            0.534719
+          ]
+        },
+        {
+          "id": "card_000004",
+          "state": "一副标准扑克牌，共 52 张：四种花色（红桃、黑桃、方块、梅花）各 13 张（A 到 K）。洗匀后随机抽出一张。",
+          "candidates": [
+            "yes",
+            "no"
+          ],
+          "target": [
+            0.5,
+            0.5
+          ],
+          "prediction": [
+            0.23793,
+            0.76207
+          ]
+        }
+      ]
+    },
+    "4b": {
+      "overall": {
+        "n": 8896,
+        "strict_acc": 0.7100944244604317,
+        "tie_aware_acc": 0.9244604316546763,
+        "regret": 0.02645597760615292,
+        "tv": 0.09155350803470311,
+        "target_tied": 0.28619604316546765
+      },
+      "card": {
+        "n": 5000,
+        "strict_acc": 0.6038,
+        "tie_aware_acc": 0.9642,
+        "regret": 0.011933333333333332,
+        "tv": 0.0641758841491853,
+        "target_tied": 0.4424
+      },
+      "card/tied": {
+        "n": 2212,
+        "strict_acc": 0.1853526220614828,
+        "tie_aware_acc": 1.0,
+        "regret": 0.0,
+        "tv": 0.049707081070087845,
+        "target_tied": 1.0
+      },
+      "card/unique": {
+        "n": 2788,
+        "strict_acc": 0.9357962697274032,
+        "tie_aware_acc": 0.9357962697274032,
+        "regret": 0.021401243424198944,
+        "tv": 0.0756554366638781,
+        "target_tied": 0.0
+      },
+      "dice_sum": {
+        "n": 3896,
+        "strict_acc": 0.8465092402464066,
+        "tie_aware_acc": 0.8734599589322382,
+        "regret": 0.045093868100017906,
+        "tv": 0.12668906230256477,
+        "target_tied": 0.08572895277207392
+      },
+      "dice_sum/unique": {
+        "n": 3562,
+        "strict_acc": 0.892756878158338,
+        "tie_aware_acc": 0.892756878158338,
+        "regret": 0.04800171549147465,
+        "tv": 0.12104330076055722,
+        "target_tied": 0.0
+      },
+      "dice_sum/tied": {
+        "n": 334,
+        "strict_acc": 0.3532934131736527,
+        "tie_aware_acc": 0.6676646706586826,
+        "regret": 0.014082633344422295,
+        "tv": 0.18689924976553154,
+        "target_tied": 1.0
+      },
+      "tie_examples": [
+        {
+          "id": "card_000003",
+          "state": "一副标准扑克牌，共 52 张：四种花色（红桃、黑桃、方块、梅花）各 13 张（A 到 K）。洗匀后随机抽出一张。",
+          "candidates": [
+            "黑色",
+            "红色"
+          ],
+          "target": [
+            0.5,
+            0.5
+          ],
+          "prediction": [
+            0.4746311902999878,
+            0.5253688097000122
+          ]
+        },
+        {
+          "id": "card_000004",
+          "state": "一副标准扑克牌，共 52 张：四种花色（红桃、黑桃、方块、梅花）各 13 张（A 到 K）。洗匀后随机抽出一张。",
+          "candidates": [
+            "yes",
+            "no"
+          ],
+          "target": [
+            0.5,
+            0.5
+          ],
+          "prediction": [
+            0.4824291169643402,
+            0.5175709128379822
+          ]
+        },
+        {
+          "id": "card_000011",
+          "state": "有一副缩水牌堆，包含红桃 5 张（A、2、4、8、Q）、梅花 5 张（A、2、4、8、Q），总计 10 张牌。洗匀后随机抽出一张。",
+          "candidates": [
+            "红桃",
+            "非红桃"
+          ],
+          "target": [
+            0.5,
+            0.5
+          ],
+          "prediction": [
+            0.43014732003211975,
+            0.5698526501655579
+          ]
+        }
+      ]
+    }
+  },
+  "rag": {
+    "nontrain": {
+      "r@4": {
+        "4b_minus_dense": {
+          "n": 293,
+          "mean": 0.017633674630261664,
+          "ci95": [
+            -0.017633674630261654,
+            0.05233219567690558
+          ],
+          "wins": 82,
+          "losses": 56,
+          "ties": 155
+        },
+        "4b_minus_v4": {
+          "n": 293,
+          "mean": 0.0736632536973834,
+          "ci95": [
+            0.04550625711035267,
+            0.10210466439135382
+          ],
+          "wins": 68,
+          "losses": 22,
+          "ties": 203
+        }
+      },
+      "r@5": {
+        "4b_minus_dense": {
+          "n": 293,
+          "mean": 0.023890784982935155,
+          "ci95": [
+            -0.009385665529010236,
+            0.05659840728100114
+          ],
+          "wins": 77,
+          "losses": 50,
+          "ties": 166
+        },
+        "4b_minus_v4": {
+          "n": 293,
+          "mean": 0.06968145620022752,
+          "ci95": [
+            0.04152445961319682,
+            0.09755403868031855
+          ],
+          "wins": 69,
+          "losses": 24,
+          "ties": 200
+        }
+      },
+      "all@4": {
+        "4b_minus_dense": {
+          "n": 293,
+          "mean": 0.020477815699658702,
+          "ci95": [
+            -0.040955631399317405,
+            0.08191126279863481
+          ],
+          "wins": 44,
+          "losses": 38,
+          "ties": 211
+        },
+        "4b_minus_v4": {
+          "n": 293,
+          "mean": 0.10238907849829351,
+          "ci95": [
+            0.05460750853242321,
+            0.15017064846416384
+          ],
+          "wins": 41,
+          "losses": 11,
+          "ties": 241
+        }
+      },
+      "all@5": {
+        "4b_minus_dense": {
+          "n": 293,
+          "mean": 0.023890784982935155,
+          "ci95": [
+            -0.03754266211604096,
+            0.08532423208191127
+          ],
+          "wins": 45,
+          "losses": 38,
+          "ties": 210
+        },
+        "4b_minus_v4": {
+          "n": 293,
+          "mean": 0.09215017064846416,
+          "ci95": [
+            0.040955631399317405,
+            0.14334470989761092
+          ],
+          "wins": 43,
+          "losses": 16,
+          "ties": 234
+        }
+      },
+      "by_hop": {
+        "2": {
+          "n": 166,
+          "dense_r5": 0.7740963855421686,
+          "4b_r5": 0.7349397590361446
+        },
+        "3": {
+          "n": 81,
+          "dense_r5": 0.720164609053498,
+          "4b_r5": 0.794238683127572
+        },
+        "4": {
+          "n": 46,
+          "dense_r5": 0.44021739130434784,
+          "4b_r5": 0.6032608695652174
+        }
+      },
+      "qa": {
+        "em_delta": {
+          "n": 293,
+          "mean": 0.010238907849829351,
+          "ci95": [
+            -0.04778156996587031,
+            0.06825938566552901
+          ],
+          "wins": 38,
+          "losses": 35,
+          "ties": 220
+        },
+        "identical_ordered_contexts": 1,
+        "different_answer_on_identical_context": 0
+      }
+    },
+    "dev": {
+      "r@4": {
+        "4b_minus_dense": {
+          "n": 94,
+          "mean": 0.028368794326241127,
+          "ci95": [
+            -0.03457446808510637,
+            0.08776595744680851
+          ],
+          "wins": 27,
+          "losses": 16,
+          "ties": 51
+        },
+        "4b_minus_v4": {
+          "n": 94,
+          "mean": 0.06560283687943262,
+          "ci95": [
+            0.021276595744680847,
+            0.11170212765957446
+          ],
+          "wins": 19,
+          "losses": 5,
+          "ties": 70
+        }
+      },
+      "r@5": {
+        "4b_minus_dense": {
+          "n": 94,
+          "mean": 0.02482269503546099,
+          "ci95": [
+            -0.031914893617021274,
+            0.08067375886524822
+          ],
+          "wins": 24,
+          "losses": 16,
+          "ties": 54
+        },
+        "4b_minus_v4": {
+          "n": 94,
+          "mean": 0.057624113475177305,
+          "ci95": [
+            0.011524822695035459,
+            0.10638297872340426
+          ],
+          "wins": 20,
+          "losses": 8,
+          "ties": 66
+        }
+      },
+      "all@4": {
+        "4b_minus_dense": {
+          "n": 94,
+          "mean": 0.010638297872340425,
+          "ci95": [
+            -0.0851063829787234,
+            0.10638297872340426
+          ],
+          "wins": 11,
+          "losses": 10,
+          "ties": 73
+        },
+        "4b_minus_v4": {
+          "n": 94,
+          "mean": 0.09574468085106383,
+          "ci95": [
+            0.02127659574468085,
+            0.18085106382978725
+          ],
+          "wins": 12,
+          "losses": 3,
+          "ties": 79
+        }
+      },
+      "all@5": {
+        "4b_minus_dense": {
+          "n": 94,
+          "mean": 0.0,
+          "ci95": [
+            -0.09574468085106383,
+            0.09574468085106383
+          ],
+          "wins": 11,
+          "losses": 11,
+          "ties": 72
+        },
+        "4b_minus_v4": {
+          "n": 94,
+          "mean": 0.07446808510638298,
+          "ci95": [
+            -0.010638297872340425,
+            0.1595744680851064
+          ],
+          "wins": 12,
+          "losses": 5,
+          "ties": 77
+        }
+      },
+      "by_hop": {
+        "2": {
+          "n": 58,
+          "dense_r5": 0.7672413793103449,
+          "4b_r5": 0.7413793103448276
+        },
+        "3": {
+          "n": 26,
+          "dense_r5": 0.6153846153846154,
+          "4b_r5": 0.7051282051282051
+        },
+        "4": {
+          "n": 10,
+          "dense_r5": 0.425,
+          "4b_r5": 0.575
+        }
+      }
+    },
+    "calibration": {
+      "r@4": {
+        "4b_minus_dense": {
+          "n": 98,
+          "mean": 0.041666666666666664,
+          "ci95": [
+            -0.018707482993197272,
+            0.1011904761904762
+          ],
+          "wins": 31,
+          "losses": 18,
+          "ties": 49
+        },
+        "4b_minus_v4": {
+          "n": 98,
+          "mean": 0.07568027210884354,
+          "ci95": [
+            0.022959183673469392,
+            0.13095238095238093
+          ],
+          "wins": 21,
+          "losses": 7,
+          "ties": 70
+        }
+      },
+      "r@5": {
+        "4b_minus_dense": {
+          "n": 98,
+          "mean": 0.061224489795918366,
+          "ci95": [
+            0.005952380952380958,
+            0.11479591836734696
+          ],
+          "wins": 31,
+          "losses": 13,
+          "ties": 54
+        },
+        "4b_minus_v4": {
+          "n": 98,
+          "mean": 0.08418367346938775,
+          "ci95": [
+            0.036564625850340135,
+            0.13435374149659862
+          ],
+          "wins": 23,
+          "losses": 6,
+          "ties": 69
+        }
+      },
+      "all@4": {
+        "4b_minus_dense": {
+          "n": 98,
+          "mean": 0.04081632653061224,
+          "ci95": [
+            -0.061224489795918366,
+            0.14285714285714285
+          ],
+          "wins": 16,
+          "losses": 12,
+          "ties": 70
+        },
+        "4b_minus_v4": {
+          "n": 98,
+          "mean": 0.09183673469387756,
+          "ci95": [
+            0.02040816326530612,
+            0.17346938775510204
+          ],
+          "wins": 12,
+          "losses": 3,
+          "ties": 83
+        }
+      },
+      "all@5": {
+        "4b_minus_dense": {
+          "n": 98,
+          "mean": 0.07142857142857142,
+          "ci95": [
+            -0.030612244897959183,
+            0.17346938775510204
+          ],
+          "wins": 18,
+          "losses": 11,
+          "ties": 69
+        },
+        "4b_minus_v4": {
+          "n": 98,
+          "mean": 0.08163265306122448,
+          "ci95": [
+            0.0,
+            0.16326530612244897
+          ],
+          "wins": 12,
+          "losses": 4,
+          "ties": 82
+        }
+      },
+      "by_hop": {
+        "2": {
+          "n": 55,
+          "dense_r5": 0.7727272727272727,
+          "4b_r5": 0.7363636363636363
+        },
+        "3": {
+          "n": 24,
+          "dense_r5": 0.75,
+          "4b_r5": 0.875
+        },
+        "4": {
+          "n": 19,
+          "dense_r5": 0.40789473684210525,
+          "4b_r5": 0.6710526315789473
+        }
+      }
+    },
+    "test": {
+      "r@4": {
+        "4b_minus_dense": {
+          "n": 101,
+          "mean": -0.01567656765676567,
+          "ci95": [
+            -0.07343234323432343,
+            0.04042904290429043
+          ],
+          "wins": 24,
+          "losses": 22,
+          "ties": 55
+        },
+        "4b_minus_v4": {
+          "n": 101,
+          "mean": 0.0792079207920792,
+          "ci95": [
+            0.032178217821782186,
+            0.12706270627062707
+          ],
+          "wins": 28,
+          "losses": 10,
+          "ties": 63
+        }
+      },
+      "r@5": {
+        "4b_minus_dense": {
+          "n": 101,
+          "mean": -0.013201320132013203,
+          "ci95": [
+            -0.0726072607260726,
+            0.04290429042904291
+          ],
+          "wins": 22,
+          "losses": 21,
+          "ties": 58
+        },
+        "4b_minus_v4": {
+          "n": 101,
+          "mean": 0.06683168316831684,
+          "ci95": [
+            0.01815181518151815,
+            0.11798679867986799
+          ],
+          "wins": 26,
+          "losses": 10,
+          "ties": 65
+        }
+      },
+      "all@4": {
+        "4b_minus_dense": {
+          "n": 101,
+          "mean": 0.009900990099009901,
+          "ci95": [
+            -0.09900990099009901,
+            0.1188118811881188
+          ],
+          "wins": 17,
+          "losses": 16,
+          "ties": 68
+        },
+        "4b_minus_v4": {
+          "n": 101,
+          "mean": 0.1188118811881188,
+          "ci95": [
+            0.0297029702970297,
+            0.2079207920792079
+          ],
+          "wins": 17,
+          "losses": 5,
+          "ties": 79
+        }
+      },
+      "all@5": {
+        "4b_minus_dense": {
+          "n": 101,
+          "mean": 0.0,
+          "ci95": [
+            -0.10891089108910891,
+            0.10891089108910891
+          ],
+          "wins": 16,
+          "losses": 16,
+          "ties": 69
+        },
+        "4b_minus_v4": {
+          "n": 101,
+          "mean": 0.1188118811881188,
+          "ci95": [
+            0.019801980198019802,
+            0.21782178217821782
+          ],
+          "wins": 19,
+          "losses": 7,
+          "ties": 75
+        }
+      },
+      "by_hop": {
+        "2": {
+          "n": 53,
+          "dense_r5": 0.7830188679245284,
+          "4b_r5": 0.7264150943396226
+        },
+        "3": {
+          "n": 31,
+          "dense_r5": 0.78494623655914,
+          "4b_r5": 0.8064516129032258
+        },
+        "4": {
+          "n": 17,
+          "dense_r5": 0.4852941176470588,
+          "4b_r5": 0.5441176470588235
+        }
+      },
+      "qa": {
+        "em_delta": {
+          "n": 101,
+          "mean": -0.0594059405940594,
+          "ci95": [
+            -0.15841584158415842,
+            0.04950495049504951
+          ],
+          "wins": 12,
+          "losses": 18,
+          "ties": 71
+        },
+        "identical_ordered_contexts": 0,
+        "different_answer_on_identical_context": 0,
+        "wins_ids": [
+          "2hop__655505_110949",
+          "2hop__267938_92763",
+          "2hop__448615_127908",
+          "3hop2__326964_265410_7713",
+          "3hop2__89854_90327_76291",
+          "3hop1__46571_87694_124169",
+          "4hop3__862_846_613770_7713",
+          "3hop2__782397_467331_162182",
+          "3hop1__768500_730460_70315",
+          "2hop__80375_90181",
+          "3hop2__781093_467331_162182",
+          "2hop__95687_577502"
+        ],
+        "loss_ids": [
+          "2hop__629030_56873",
+          "4hop1__88342_49853_128008_80286",
+          "2hop__88632_67668",
+          "2hop__10620_49084",
+          "3hop1__857_846_7791",
+          "2hop__144303_483189",
+          "2hop__153573_45901",
+          "2hop__6827_79845",
+          "2hop__20536_96912",
+          "3hop1__128516_30587_83479",
+          "3hop1__639955_834494_34088",
+          "2hop__159737_27110",
+          "4hop1__129721_32392_823060_610794",
+          "2hop__557743_92763",
+          "2hop__141456_6455",
+          "2hop__646573_83769",
+          "4hop1__131632_32392_823060_610794",
+          "2hop__757497_78606"
+        ]
+      }
+    },
+    "rounding_top5_changes": [],
+    "saturation": {
+      "v4": 0.02286689419795222,
+      "4b": 0.023959044368600683
+    }
+  },
+  "data_audit": {
+    "rag_train_records": 17106,
+    "rag_train_source_counts": {
+      "inpool": 9771,
+      "corpus_bm25": 1467,
+      "dense": 1467,
+      "random_filtered": 978,
+      "choice": 3423
+    },
+    "rag_test_unique_questions": 77,
+    "rag_test_questions_in_semantic_train": 77,
+    "expected_dense_pointwise_draws_in_2500_steps": 857.593826727464,
+    "browser_train_rules": {
+      "all_fields_satisfied_submit": 1046,
+      "field_empty": 1002,
+      "field_wrong_value": 1042,
+      "no_matching_suggestion": 990,
+      "suggestions_not_yet_visible": 1034,
+      "typed_query_suggestion_visible": 1096,
+      "fields_populated_submit_now": 1054,
+      "required_field_missing_fill_first": 1006,
+      "already_submitted_open_result": 1012,
+      "dropdown_needs_target_value": 944,
+      "dropdown_already_requested_state": 1088,
+      "requested_option_absent": 1006,
+      "checkbox_already_requested_state_do_not_retoggle": 1520,
+      "checkbox_not_in_requested_state": 1498,
+      "matching_result_open_it": 1044,
+      "no_results_unsatisfiable": 1022,
+      "all_requirements_visible_done": 1056,
+      "repeated_scroll_no_progress_switch": 1590,
+      "content_below_fold_scroll": 1554
+    },
+    "browser_example_meta": {
+      "theme": "flights",
+      "lang": "en",
+      "rule_case": "all_fields_satisfied_submit",
+      "correct_operations": [
+        "CLICK"
+      ],
+      "question_kind": "operation",
+      "scenario_id": "form-00000"
+    },
+    "browser_random_open_labels": {
+      "n_explicit_named_goal": 327,
+      "different_target_name": 288,
+      "examples": [
+        {
+          "id": "browser_submit-00005_target",
+          "goal": "目标:\n找到《Serra Lodge》并打开详情",
+          "labeled_target": "[2] \"View The Glasshouse\" (role=button)",
+          "state": "PAGE: Forma · Bergen\n\n浏览书目。搜索标题或作者。\n\nELEMENTS:\n[1] \"View The Glasshouse\" (role=button; operations=CLICK)\n[2] \"View The Glasshouse\" (role=button; operations=CLICK)\n[3] \"目的地\" (role=textbox; operations=TYPE_TEXT,CLICK; value='Bergen')\n[4] \"搜索住宿\" (role=button; operations=CLICK)\n[5] \"View The Glasshouse\" (role=button; operations=CLICK)\n\nRECENT ACTIONS:\nCLICK \"Find stays\" (page changed)"
+        },
+        {
+          "id": "browser_submit-00020_target",
+          "goal": "GOAL:\nFind Nature stays in Tallinn, then open Harbor Light",
+          "labeled_target": "[1] \"View Atlas House\" (role=button)",
+          "state": "PAGE: Forma · Tallinn\n\nSmall, considered places. Search a destination and set filters.\n\nELEMENTS:\n[1] \"View Atlas House\" (role=button; operations=CLICK)\n[2] \"Find stays\" (role=button; operations=CLICK)\n[3] \"View Serra Lodge\" (role=button; operations=CLICK)\n[4] \"Destination\" (role=textbox; operations=TYPE_TEXT,CLICK; value='Tallinn')\n[5] \"View Villa Nova\" (role=button; operations=CLICK)\n\nRECENT ACTIONS:\nCLICK \"Find stays\" (page changed)"
+        },
+        {
+          "id": "browser_submit-00022_target",
+          "goal": "GOAL:\nFind Nature stays in Tallinn with free cancellation, then open Cedar Court",
+          "labeled_target": "[3] \"View Serra Lodge\" (role=button)",
+          "state": "PAGE: Forma · Tallinn\n\nSmall, considered places. Search a destination and set filters.\n\nELEMENTS:\n[1] \"Find stays\" (role=button; operations=CLICK)\n[2] \"View Cedar Court\" (role=button; operations=CLICK)\n[3] \"View Serra Lodge\" (role=button; operations=CLICK)\n[4] \"View Serra Lodge\" (role=button; operations=CLICK)\n[5] \"Destination\" (role=textbox; operations=TYPE_TEXT,CLICK; value='Tallinn')\n\nRECENT ACTIONS:\nCLICK \"Find stays\" (page changed)"
+        }
+      ]
+    },
+    "browser_dropdown_only_done_labels": 544,
+    "actual_rag_draws_replayed_from_seed": {
+      "dense": 864,
+      "inpool": 5650,
+      "choice": 2016,
+      "corpus_bm25": 880,
+      "random_filtered": 590
+    },
+    "unique_rag_rows_seen": 7498,
+    "rag_pointwise_test_all_no_accuracy": 0.9072356215213359
+  },
+  "browser": {
+    "original_1": [
+      {
+        "step": 1,
+        "operation": "TYPE_TEXT",
+        "p_select": 0.18885777842073068,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9992812765664567,
+            "6:2": 0.0004681440047879207,
+            "6:3": 0.0002505794287553834
+          },
+          "confidence": 0.9989219148496851
+        },
+        "action": "Destination"
+      },
+      {
+        "step": 2,
+        "operation": "CLICK",
+        "p_select": 0.1857205472389469,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.997914739289706,
+            "6:2": 0.0013875544943696054,
+            "6:3": 0.0006977062159245397
+          },
+          "confidence": 0.9968721089345588
+        },
+        "action": "Free cancellation"
+      },
+      {
+        "step": 3,
+        "operation": "CLICK",
+        "p_select": 0.1614976220471506,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9991623519243885,
+            "6:2": 0.00042536763088622104,
+            "6:3": 0.0004122804447253916
+          },
+          "confidence": 0.9987435278865826
+        },
+        "action": "Find stays"
+      },
+      {
+        "step": 4,
+        "operation": "CLICK",
+        "p_select": 0.1986635907908287,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9983349184533468,
+            "6:2": 0.0009103636077209456,
+            "6:3": 0.0007547179389324233
+          },
+          "confidence": 0.9975023776800201
+        },
+        "action": "View Casa Flora"
+      },
+      {
+        "step": 5,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "forma."
+      },
+      {
+        "step": 6,
+        "operation": "CLICK",
+        "p_select": 0.12794447102012338,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.99636690648072,
+            "6:2": 0.002098094668670786,
+            "6:3": 0.0015349988506091728
+          },
+          "confidence": 0.9945503597210799
+        },
+        "action": "View Casa Flora"
+      },
+      {
+        "step": 7,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "forma."
+      },
+      {
+        "step": 8,
+        "operation": "CLICK",
+        "p_select": 0.081841993096264,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9935819643472044,
+            "6:2": 0.0033092670024018225,
+            "6:3": 0.003108768650393866
+          },
+          "confidence": 0.9903729465208065
+        },
+        "action": "forma."
+      },
+      {
+        "step": 9,
+        "operation": "CLICK",
+        "p_select": 0.08812235980502946,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9912046650797458,
+            "6:2": 0.004535049850337142,
+            "6:3": 0.00426028506991701
+          },
+          "confidence": 0.9868069976196185
+        },
+        "action": "forma."
+      },
+      {
+        "step": 10,
+        "operation": "CLICK",
+        "p_select": 0.05336892949217618,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9920203107326546,
+            "6:2": 0.003865202559820928,
+            "6:3": 0.004114486707524504
+          },
+          "confidence": 0.9880304660989819
+        },
+        "action": "forma."
+      }
+    ],
+    "other_city": [
+      {
+        "step": 1,
+        "operation": "TYPE_TEXT",
+        "p_select": 0.13569876181848764,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9753079919736676,
+            "6:2": 0.01758644280984037,
+            "6:3": 0.007105565216492081
+          },
+          "confidence": 0.9629619879605014
+        },
+        "action": "Destination"
+      },
+      {
+        "step": 2,
+        "operation": "CLICK",
+        "p_select": 0.14248308839120158,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9978494167864693,
+            "6:2": 0.0015722023073092145,
+            "6:3": 0.000578380906221366
+          },
+          "confidence": 0.996774125179704
+        },
+        "action": "Free cancellation"
+      },
+      {
+        "step": 3,
+        "operation": "CLICK",
+        "p_select": 0.1616919667955925,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9988945145448909,
+            "6:2": 0.0005700103171964344,
+            "6:3": 0.0005354751379127834
+          },
+          "confidence": 0.9983417718173363
+        },
+        "action": "Find stays"
+      },
+      {
+        "step": 4,
+        "operation": "CLICK",
+        "p_select": 0.21472873285125416,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9989761150839028,
+            "6:2": 0.0006068223919675933,
+            "6:3": 0.00041706252412961986
+          },
+          "confidence": 0.9984641726258541
+        },
+        "action": "View The Glasshouse"
+      },
+      {
+        "step": 5,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "forma."
+      },
+      {
+        "step": 6,
+        "operation": "CLICK",
+        "p_select": 0.1694366802481444,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9975040140045321,
+            "6:2": 0.0015352506733504261,
+            "6:3": 0.000960735322117378
+          },
+          "confidence": 0.9962560210067982
+        },
+        "action": "forma."
+      },
+      {
+        "step": 7,
+        "operation": "CLICK",
+        "p_select": 0.05831680745355539,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9963650331746584,
+            "6:2": 0.0020434929307065254,
+            "6:3": 0.001591473894635122
+          },
+          "confidence": 0.9945475497619874
+        },
+        "action": "forma."
+      },
+      {
+        "step": 8,
+        "operation": "CLICK",
+        "p_select": 0.06352091301676024,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9939185062600948,
+            "6:2": 0.0032305464787514074,
+            "6:3": 0.002850947261153689
+          },
+          "confidence": 0.9908777593901422
+        },
+        "action": "Reading room"
+      },
+      {
+        "step": 9,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "Find a stay"
+      },
+      {
+        "step": 10,
+        "operation": "CLICK",
+        "p_select": 0.093701446042981,
+        "selection_if_select": {
+          "choice": "6:1",
+          "probabilities": {
+            "6:1": 0.9958381799589083,
+            "6:2": 0.00224315116967011,
+            "6:3": 0.001918668871421508
+          },
+          "confidence": 0.9937572699383623
+        },
+        "action": "Reading room"
+      },
+      {
+        "step": 11,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "Reading room"
+      },
+      {
+        "step": 12,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "Reading room"
+      },
+      {
+        "step": 13,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "Reading room"
+      }
+    ],
+    "other_category": [
+      {
+        "step": 1,
+        "operation": "TYPE_TEXT",
+        "p_select": 0.233525824671683,
+        "selection_if_select": {
+          "choice": "6:2",
+          "probabilities": {
+            "6:1": 0.00827806813741297,
+            "6:2": 0.989117122152888,
+            "6:3": 0.002604809709699062
+          },
+          "confidence": 0.9836756832293321
+        },
+        "action": "Destination"
+      },
+      {
+        "step": 2,
+        "operation": "CLICK",
+        "p_select": 0.35008516922454763,
+        "selection_if_select": {
+          "choice": "6:2",
+          "probabilities": {
+            "6:1": 0.017710810225561525,
+            "6:2": 0.9726599892763663,
+            "6:3": 0.009629200498072218
+          },
+          "confidence": 0.9589899839145495
+        },
+        "action": "View Casa Flora"
+      },
+      {
+        "step": 3,
+        "operation": "CLICK",
+        "p_select": null,
+        "selection_if_select": null,
+        "action": "forma."
+      },
+      {
+        "step": 4,
+        "operation": "CLICK",
+        "p_select": 0.1246570444947442,
+        "selection_if_select": {
+          "choice": "6:2",
+          "probabilities": {
+            "6:1": 0.03568619350698726,
+            "6:2": 0.9523604289564588,
+            "6:3": 0.01195337753655382
+          },
+          "confidence": 0.928540643434688
+        },
+        "action": "Free cancellation"
+      },
+      {
+        "step": 5,
+        "operation": "CLICK",
+        "p_select": 0.07136896875895993,
+        "selection_if_select": {
+          "choice": "6:2",
+          "probabilities": {
+            "6:1": 0.15291772225729527,
+            "6:2": 0.825052391132859,
+            "6:3": 0.022029886609845704
+          },
+          "confidence": 0.7375785866992884
+        },
+        "action": "forma."
+      },
+      {
+        "step": 6,
+        "operation": "CLICK",
+        "p_select": 0.10542013929282384,
+        "selection_if_select": {
+          "choice": "6:2",
+          "probabilities": {
+            "6:1": 0.21571736406718012,
+            "6:2": 0.7677777483998706,
+            "6:3": 0.016504887532949406
+          },
+          "confidence": 0.6516666225998058
+        },
+        "action": "forma."
+      },
+      {
+        "step": 7,
+        "operation": "CLICK",
+        "p_select": 0.08153315625045693,
+        "selection_if_select": {
+          "choice": "6:2",
+          "probabilities": {
+            "6:1": 0.1332415584854916,
+            "6:2": 0.8388294936141905,
+            "6:3": 0.02792894790031802
+          },
+          "confidence": 0.7582442404212857
+        },
+        "action": "forma."
+      }
+    ]
+  }
+}

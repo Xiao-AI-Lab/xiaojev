@@ -38,3 +38,6 @@ results/retrieval/
 results/v4_browser/
 results/recomputed_fusion.json
 data/*.splits.json
+
+# rag_eval runtime score caches and reader outputs (regenerable)
+rag_eval/*.jsonl

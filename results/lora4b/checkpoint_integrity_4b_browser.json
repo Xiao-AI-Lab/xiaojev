@@ -1,0 +1,16 @@
+{
+  "selected": {
+    "checkpoint": "ckpt/qwen3_4b_browser/step50",
+    "step": 50,
+    "selection": "highest accuracy on fixed dev rows; ties prefer earlier step",
+    "dev_accuracy": 1.0,
+    "dev_n": 150,
+    "data": "v4_repair run artifacts: browser_dom.jsonl (rendered counterfactual fixture states)",
+    "initialized_from": "ckpt/qwen3_4b_browser_synth/step150"
+  },
+  "integrity": {
+    "checkpoint": "ckpt/qwen3_4b_browser/step50",
+    "files": 13,
+    "mismatches": []
+  }
+}
