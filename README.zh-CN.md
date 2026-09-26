@@ -18,24 +18,30 @@ xiaojev 对动态候选集打分并返回概率分布，供应用选择动作、
 | 能力 | 评测 | 指标 |
 |---|---|---:|
 | 浏览器操作 | 本地酒店任务，独立核验最终页面 | **4/4** |
-| RAG 检索 | MuSiQue test R@5，101 题，dense + xiaojev 融合 | **77.31%** |
-| RAG 问答流程 | MuSiQue test EM / F1，101 题，top-4 上下文 | **36.63% / 46.60%** |
-| RAG 可答性门控 | 不可答题幻觉率；reader prompt tokens | **32.7% → 1.0%；−83.7%** |
+| RAG 检索 | MuSiQue test R@5，101 题，dense + 4B xiaojev 融合 | **79.79%** |
+| RAG 问答流程 | MuSiQue test EM / F1，101 题，top-4 上下文 | **40.6% / 49.7%** |
+| 迭代 RAG + 门控 | 可答题 EM（3 轮）；不可答题幻觉率；混合流量 tokens | **52.5%；6.9%；−73%** |
 | 证据判断 | 语义 test 准确率，2,384 条决策 | **83.52%** |
 | 游戏策略 | test / OOD 加权宏平均成功率 | **53.26% / 26.72%** |
 | 概率推理 | 概率 test 准确率 / 平均 TV，8,145 条决策 | **85.62% / 0.1264** |
 | 推理速度 | 单次决策跨域 p50，单张 RTX 3090 | **27.84–69.49 ms** |
 
 浏览器指标使用单独适配的权重，覆盖三个本地 fixture 任务，其中一个重复执行。
-训练包含相同页面布局，验收案例参与了权重选择。RAG 检索使用 v4 权重和排名融合，
-问答答案由独立的 Qwen reader 生成。可答性门控使用 v3，阈值只在 98 道校准题上选定后冻结；
-它以可答题覆盖率为代价（保留 27.7%——瓶颈在 BM25 一阶段的证据完整率，不在门控本身）
-换来 33 倍幻觉下降；本地 gold 全可答，不可答样本是移除金标文档的合成构造，
-详见[门控报告](rag_eval/GATE_REPORT.md)。其余模型指标使用 v4。TV 越低表示概率校准越好；
+训练包含相同页面布局，验收案例参与了权重选择。RAG 检索将 dense 检索序与 4B 权重的
+相关性分数做加权 RRF 融合（参数只用 98 道校准题选定后冻结），问答答案由独立的
+Qwen reader 生成。迭代检索是双刃剑——可答题 EM 从 40.6 升到 52.5 的同时，不可答题幻觉率
+也从 53.5% 升到 62.4%——因此用校准的可答性门控作循环的**控制器**：gated_refuse 臂既吃满
+迭代收益（被答题 EM 52.1），又把幻觉压到 6.9%、混合流量 token 省 73%，可答题保留率 70.3%
+（旧 BM25 门控只有 27.7%）。在纯可答流量上门控没有收益且更贵——它的全部价值都在
+混合流量。本地 gold 全可答，不可答样本是移除金标文档的合成构造。详见
+[4B 融合](rag_eval/FUSION4B_REPORT.md) · [dense 门控复测](rag_eval/GATE_DENSE_REPORT.md) ·
+[迭代 RAG](rag_eval/ITER_REPORT.md) · [BM25 门控](rag_eval/GATE_REPORT.md)。
+其余模型指标使用 v4。TV 越低表示概率校准越好；
 延迟统计包含分词的预热后模型推理，不包含浏览器执行或问答 reader。
 
 ```bash
-# 离线复算 RAG 指标及校准选择，不需要 GPU 或下载模型
+# 离线复算 v4 融合的 RAG 指标及校准选择（77.31%），不需要 GPU 或下载模型；
+# 4B 融合数字另需 4B 分数产物，见 rag_eval/FUSION4B_REPORT.md
 python -m rag_eval.evaluate_fusion --verify-calibration
 ```
 
@@ -199,8 +205,9 @@ python comparison/compare_report.py results/compare_v4_frozen_episodes.jsonl \
 ## 完整结果
 
 当前模型的指标、权重选择、评测范围及证据见 **[评测报告](docs/V4_REPAIR.md)**。
-可答性门控端到端见 **[门控报告](rag_eval/GATE_REPORT.md)**；4B LoRA 扩容实验与 4B 浏览器修复见
-[docs/RESULTS.md](docs/RESULTS.md) 第 10–11 节，历史 v1–v3 研究同在其中。
+可答性门控、4B 排名融合、dense 门控复测与迭代 RAG 等 RAG 应用线见
+**[rag_eval/](rag_eval/README.md)**（每个实验一份报告）；4B LoRA 扩容实验与 4B 浏览器修复见
+[docs/RESULTS.md](docs/RESULTS.md) 第 10–11 节，RAG 优化线第 12 节与历史 v1–v3 研究同在其中。
 `results/` 包含汇总指标、本地页面轨迹和冻结的文档排名数据。
 
 ## Checkpoints

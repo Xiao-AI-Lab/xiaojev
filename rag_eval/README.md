@@ -40,3 +40,31 @@ python scripts/check_rag_data.py
 BM25 outputs default to `results/retrieval`; override with `XIAOJEV_RETRIEVAL_DIR`. Dense hard negatives can reuse an NV-Embed-v2 index: `XIAOJEV_DENSE_INDEX_ROOT` must contain `index/inputs.json` with a `chunk` list of `{id, content}` records and `index/chunk_vectors.npy` in the same row order. The embedding endpoint is set with `XIAOJEV_EMBED_URL` (default `http://127.0.0.1:8019/v1/embeddings`). Without that index/service, the generator explicitly reports its BM25 fallback; that fallback does not exactly reproduce the original dense-negative training run.
 
 QA scores and the small test-set QA improvement are recorded in [the release report](../docs/V4_REPAIR.md). Reader baselines are retained same-configuration runs, not fresh paired reruns.
+
+## Experiments in this directory
+
+Each report lists its committed code and summary JSONs; large score caches and
+reader predictions regenerate at runtime (git-ignored `rag_eval/*.jsonl`).
+
+- **[GATE_REPORT.md](GATE_REPORT.md)** — BM25 first stage + v3 answerability
+  gate (v3 era). One line: hallucination on unanswerable questions 32.7% →
+  1.0% and −83.7% reader tokens, but only 27.7% of answerable questions kept
+  (BM25 top-5 evidence completeness is the bottleneck, not the gate).
+- **[FUSION4B_REPORT.md](FUSION4B_REPORT.md)** — 4B weighted-RRF fusion
+  (reranker weight 0.5, constant 1) and a learned-fusion control. One line:
+  test R@5 **79.79%** vs dense 73.35% (+6.44 pp, 95% CI [+3.2, +9.8]) and QA
+  EM 39.9 tying the oracle-pool reader; logistic learned fusion ties RRF
+  (negative result — RRF stays the default).
+- **[GATE_DENSE_REPORT.md](GATE_DENSE_REPORT.md)** — the gate re-run with a
+  dense first stage. One line (inversion): coverage *drops* to 8.9% at the
+  90% precision point even though the dense Pareto frontier is higher —
+  because v3 reranking still damages the dense pool and the v3 gate
+  underestimates short dense contexts; hallucination reaches 0.0%.
+- **[ITER_REPORT.md](ITER_REPORT.md)** — calibration-gated iterative RAG,
+  four arms. One line: iterative retrieval is a double-edged sword
+  (answerable EM 40.6 → 52.5, unanswerable hallucination 53.5% → 62.4%);
+  `gated_refuse` is the only arm that wins both sides (answered EM 52.1,
+  hallucination 6.9%, −73% mixed-traffic tokens, answerable keep rate 70.3%
+  vs the old BM25 gate's 27.7% — iteration rescued gate coverage with no
+  retraining). On pure-answerable traffic the gate adds nothing and costs
+  more: its entire value is in mixed traffic.

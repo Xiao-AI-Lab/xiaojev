@@ -20,9 +20,9 @@ autoregressive text generation.
 | Capability | Evaluation | Result |
 |---|---|---:|
 | Browser actions | Local hotel tasks, independently checked final pages | **4/4** |
-| RAG retrieval | MuSiQue test R@5, 101 questions, dense + xiaojev fusion | **77.31%** |
-| RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **36.63% / 46.60%** |
-| RAG answerability gate | Hallucination rate on unanswerable questions; reader prompt tokens | **32.7% → 1.0%; −83.7%** |
+| RAG retrieval | MuSiQue test R@5, 101 questions, dense + 4B xiaojev fusion | **79.79%** |
+| RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **40.6% / 49.7%** |
+| Iterative RAG + gate | Answerable EM (3 rounds); unanswerable hallucination; mixed-traffic tokens | **52.5%; 6.9%; −73%** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |
@@ -31,18 +31,27 @@ autoregressive text generation.
 Browser results use the separately adapted browser checkpoint and cover three
 local fixture tasks, including one repeated task. The fixture layout is present
 in adaptation data, and these cases participate in checkpoint selection.
-RAG retrieval uses the v4 checkpoint with rank fusion; QA answers come from a
-separate Qwen reader. The answerability gate uses v3 with a threshold chosen
-on 98 calibration questions and then frozen; it trades answerable-question
-coverage (27.7% kept — bottlenecked by the BM25 first stage's evidence
-completeness, not by the gate) for a 33x hallucination reduction, and its
-unanswerable cases are synthetic (gold documents removed), because the local
-gold set is fully answerable. Details: [gate report](rag_eval/GATE_REPORT.md).
+RAG retrieval fuses the dense retriever's order with the 4B checkpoint's
+relevance scores (weighted RRF, parameters selected on 98 calibration
+questions and frozen); QA answers come from a separate Qwen reader. Iterative
+retrieval is a double-edged sword — answerable EM rises 40.6 → 52.5 while
+unanswerable hallucination climbs 53.5 → 62.4% — so the calibrated
+answerability gate is used as the loop's *controller*: the gated-refuse arm
+keeps the iteration gain on answered questions (EM 52.1), cuts hallucination
+to 6.9%, saves 73% of mixed-traffic tokens, and keeps 70.3% of answerable
+questions (the old BM25 gate kept only 27.7%). On pure-answerable traffic the
+gate adds nothing and costs more; its entire value is in mixed traffic.
+Unanswerable cases are synthetic (gold documents removed), because the local
+gold set is fully answerable. Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
+[dense gate re-test](rag_eval/GATE_DENSE_REPORT.md) ·
+[iterative RAG](rag_eval/ITER_REPORT.md) · [BM25 gate](rag_eval/GATE_REPORT.md).
 Other model metrics use v4. Lower TV means better probability calibration.
 Latency measures warmed-up model inference, including tokenization, and
 excludes browser execution and the QA reader.
 
-Reproduce the RAG ranking results offline, without model downloads:
+Reproduce the v4-fusion RAG ranking results (77.31%) offline, without model
+downloads (the 4B-fusion figure additionally needs the 4B score artifact,
+see [FUSION4B_REPORT.md](rag_eval/FUSION4B_REPORT.md)):
 
 ```bash
 python -m rag_eval.evaluate_fusion --verify-calibration
@@ -228,10 +237,12 @@ using 5, 5, 5, and 4 actions. Actual URLs and filter text were checked. See the
 ## Full results
 
 Current v4 metrics, checkpoint selection, validation limits, and evidence links
-are in **[docs/V4_REPAIR.md](docs/V4_REPAIR.md)**. The answerability gate is in
-**[rag_eval/GATE_REPORT.md](rag_eval/GATE_REPORT.md)**; the 4B LoRA scaling
-study and 4B browser repair are in [docs/RESULTS.md](docs/RESULTS.md)
-sections 10–11, alongside the historical v1–v3 tables. Summary JSONs live in
+are in **[docs/V4_REPAIR.md](docs/V4_REPAIR.md)**. The RAG application line —
+answerability gates, 4B rank fusion, dense-stage gate re-test, and iterative
+RAG — is in **[rag_eval/](rag_eval/README.md)** (one report per experiment).
+The 4B LoRA scaling study and 4B browser repair are in
+[docs/RESULTS.md](docs/RESULTS.md) sections 10–11, alongside the historical
+v1–v3 tables and the RAG optimization section 12. Summary JSONs live in
 `results/`; local fixture traces and frozen document-ranking inputs are
 included.
 

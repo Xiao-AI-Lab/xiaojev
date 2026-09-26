@@ -8,3 +8,7 @@ numpy>=1.24        # dense-index reuse and retrieval data generation
 # Optional — only needed for the game-domain comparison rollouts
 # (NanoJev's ViZDoom basic / predict_position environments):
 # vizdoom>=1.2
+
+# Optional — only needed for the 4B LoRA scaling line
+# (training/lora4b_model.py, rag_eval/run_iterative.py):
+# peft>=0.13

@@ -449,6 +449,94 @@ and *both* sizes pass 4/4: 0.6B at `ckpt/v4_browser_dom/step100`, 4B at
 `ckpt/qwen3_4b_browser/step50`. Scale helps where data coverage is already
 aligned; it cannot substitute for that alignment.
 
+## 12. The RAG optimization line: fusion, gate variants, iterative retrieval
+
+Three connected experiments on the same 293 MuSiQue non-training questions
+(dev 94 / calibration 98 / test 101); every parameter (fusion weights, gate
+tau) is selected on the 98 calibration questions only and frozen before
+dev/test. Full reports and summary JSONs in `rag_eval/`:
+[FUSION4B_REPORT.md](../rag_eval/FUSION4B_REPORT.md),
+[GATE_DENSE_REPORT.md](../rag_eval/GATE_DENSE_REPORT.md),
+[ITER_REPORT.md](../rag_eval/ITER_REPORT.md).
+
+### 12a. 4B rank fusion (test R@5 79.79%)
+
+Same protocol and frozen-candidate file as the v4 repair fusion; only the
+reranker scores change to the 4B LoRA model. Frozen config: reranker weight
+0.5, rank constant 1 (v4 fusion: 0.4/1).
+
+| Set | dense | v4 fusion | **4B fusion** | 4B Δ vs dense [95% CI] |
+|---|---:|---:|---:|---|
+| calibration (98) | 69.64% | 76.87% | 81.21% | +11.56 [+8.0, +15.3] |
+| dev (94) | 68.88% | 74.11% | 76.15% | +7.27 [+3.0, +11.5] |
+| **test (101)** | **73.35%** | **77.31%** | **79.79%** | **+6.44 [+3.2, +9.8]** |
+| nontrain (293) | 70.68% | 76.14% | 79.10% | +8.42 [+6.2, +10.6] |
+
+End-to-end QA (top-4, same reader, 293 questions): EM **39.9** / F1 **49.8** —
+ties the oracle in-pool v3 reader (39.9, privileged 20-candidate pools) and
+exceeds HippoRAGv2's 37.2 on the same subset; test subset EM 40.6 / F1 49.7.
+
+**Learned fusion is a negative result:** 3-parameter logistic fusion (fit on
+the same 98 calibration questions, 5-fold CV inside them) ties manual RRF —
+test R@5 v4: 77.31 → 77.97 (+0.66 pp), 4B: 79.79 → 79.87 (+0.08 pp), with CV
+standard deviation ±5–6 pp dwarfing any difference. RRF (training-free)
+remains the default; xiaojev's calibrated probabilities add no ranking gain
+over rank order. (`rag_eval/fusion_logistic_metrics.json`.)
+
+### 12b. Dense-stage gate re-test: an honest inversion
+
+Replacing the gate's BM25 first stage with dense (top-50, retry top-100)
+moves the Pareto frontier up at equal tau (coverage 42.9% vs 31.6% at
+τ = 0.5) — but at the required 90% answered-precision operating point the
+high-precision tail is worse, so coverage **drops from 27.7% to 8.9%**
+(τ = 0.88 vs 0.65). Safety improves in exchange: hallucination 32.7% →
+**0.0%**, refusal recall 98%, −94% reader prompt tokens. Mechanism (measured,
+not speculation): (1) v3 reranking still damages the dense pool (All@5 41.6%
+→ 27.0%; the 4B fusion repairs exactly this to 54.5%); (2) the v3
+answerability channel systematically underestimates short dense contexts —
+median P(answerable) is only ~0.42 even when the top-5 contains all gold
+evidence, because the channel was trained on 20-passage states. This
+inversion is what motivates the iterative combination below.
+
+### 12c. Iterative RAG, four arms: the gate is a controller, not a filter
+
+Pipeline per round: dense top-50 (round 1: original question; later: 27B
+subqueries) → 4B relevance + RRF fusion → top-5 deduped into accumulated
+evidence → v3 answerability gate; τ = 0.64 calibrated as usual. Arms:
+`single` (1 round), `fixed2` (2 rounds), `gated` (≤3 rounds, answer on
+exhaust), `gated_refuse` (≤3 rounds, refuse on exhaustion).
+
+| Test (101/arm) | ans EM | ans EM (answered only) | unans hallucination | mixed-traffic prompt tokens |
+|---|---:|---:|---:|---:|
+| single | 0.406 | 0.406 | 53.5% | 200.1k |
+| fixed2 | **0.525** | 0.525 | 59.4% | 446.5k |
+| gated | 0.515 | 0.515 | **62.4%** | 621.4k |
+| gated_refuse | 0.366* | **0.521** | **6.9%** | **167.2k (−73%)** |
+
+*refusals counted as zero.
+
+Three conclusions, all measured:
+
+1. **Iterative retrieval is a double-edged sword.** Subqueries repair
+   evidence (answerable EM +11.9 pp) but also fetch more convincing wrong
+   evidence — hallucination climbs monotonically with rounds (53.5 → 59.4 →
+   62.4%), and even the single-round dense+4B baseline hallucinates far more
+   than the old BM25 pipeline did (53.5% vs 32.7%). Retrieval strength
+   without a refusal mechanism is a net negative.
+2. **Gate + refusal is the only configuration that wins both sides, and
+   iteration rescued gate coverage without retraining.** gated_refuse:
+   answered EM 52.1 / F1 64.3 (on par with fixed2), hallucination 6.9% (9x
+   down), −73% mixed-traffic tokens, answerable keep rate **70.3%** vs the
+   old BM25 gate's 27.7% (2.5x). Refusal quality: recall 90.1%, precision
+   75.2%, stable across splits; the gate's own AUC rises 0.77 → 0.88 with
+   iterated evidence.
+3. **The gate's entire value is in mixed traffic.** On pure-answerable
+   traffic, gated ties fixed2 (EM −1.0 pp, F1 +0.2 pp) while costing more
+   tokens; and the v3 gate is conservative on short dense contexts (only
+   26/101 answerable questions stop at round 1, avg 2.16 rounds), so it saves
+   no scoring cost there. A 4B gate or a v5 short-context-retrained gate is
+   the documented fix.
+
 ## Reproducibility notes
 
 - NanoJev rerun fidelity: re-executing the public NanoJev weights through our
