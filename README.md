@@ -23,6 +23,7 @@ autoregressive text generation.
 | RAG retrieval | MuSiQue test R@5, 101 questions, dense + 4B xiaojev fusion | **79.79%** |
 | RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **40.6% / 49.7%** |
 | Iterative RAG + gate | Answerable EM (3 rounds); unanswerable hallucination; mixed-traffic tokens | **52.5%; 6.9%; −73%** |
+| Cross-dataset transfer | Fusion ΔR@5 zero-tuning on musique / 2wiki / hotpotqa; gate AUC on hotpotqa / 2wiki | **+6.4 / +2.3 / +0.5 pp; 0.95 / 0.99** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |
@@ -42,7 +43,10 @@ to 6.9%, saves 73% of mixed-traffic tokens, and keeps 70.3% of answerable
 questions (the old BM25 gate kept only 27.7%). On pure-answerable traffic the
 gate adds nothing and costs more; its entire value is in mixed traffic.
 Unanswerable cases are synthetic (gold documents removed), because the local
-gold set is fully answerable. Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
+gold set is fully answerable. The musique configuration transfers zero-tuning
+to hotpotqa and 2wikimultihopqa, where the gate is the strongest component
+(per-dataset τ self-calibration by design; details:
+[transfer report](rag_eval/TRANSFER_REPORT.md)). Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
 [dense gate re-test](rag_eval/GATE_DENSE_REPORT.md) ·
 [iterative RAG](rag_eval/ITER_REPORT.md) · [BM25 gate](rag_eval/GATE_REPORT.md).
 Other model metrics use v4. Lower TV means better probability calibration.

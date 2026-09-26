@@ -41,3 +41,4 @@ data/*.splits.json
 
 # rag_eval runtime score caches and reader outputs (regenerable)
 rag_eval/*.jsonl
+rag_eval/transfer/*.jsonl

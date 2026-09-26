@@ -68,3 +68,16 @@ reader predictions regenerate at runtime (git-ignored `rag_eval/*.jsonl`).
   vs the old BM25 gate's 27.7% — iteration rescued gate coverage with no
   retraining). On pure-answerable traffic the gate adds nothing and costs
   more: its entire value is in mixed traffic.
+- **[ITER_4BGATE_REPORT.md](ITER_4BGATE_REPORT.md)** — the same four arms with
+  the 4B model as the gate. One line: the 4B gate becomes the default —
+  round-1 acceptance 26 → 61/101, refusal precision 75.2% → 82.6%, keep rate
+  70.3% → 81.2%, AUC 0.882 → 0.914, tokens −13~20% — at the honestly-stated
+  price of hallucination 6.9% → 8.9% on test (dev moves the other way) and a
+  −5 pp gated-arm EM give-back from earlier stopping (mitigations listed).
+- **[TRANSFER_REPORT.md](TRANSFER_REPORT.md)** — musique frozen config applied
+  zero-tuning to hotpotqa / 2wikimultihopqa. One line: fusion gains transfer
+  (ΔR@5 positive on all three datasets; significant on musique +6.4 and 2wiki
+  +2.3, ceiling-limited on hotpotqa), QA ΔEM +5.2 on 2wiki, and the gate is
+  the strongest-transferring component (AUC 0.95 / 0.99, hallucination 2–4%
+  at 68–94% keep rate); per-dataset tau self-calibration is design, not
+  tuning.

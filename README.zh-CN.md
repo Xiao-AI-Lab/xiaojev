@@ -21,6 +21,7 @@ xiaojev 对动态候选集打分并返回概率分布，供应用选择动作、
 | RAG 检索 | MuSiQue test R@5，101 题，dense + 4B xiaojev 融合 | **79.79%** |
 | RAG 问答流程 | MuSiQue test EM / F1，101 题，top-4 上下文 | **40.6% / 49.7%** |
 | 迭代 RAG + 门控 | 可答题 EM（3 轮）；不可答题幻觉率；混合流量 tokens | **52.5%；6.9%；−73%** |
+| 跨数据集迁移 | 零调参融合 ΔR@5（musique / 2wiki / hotpotqa）；门控 AUC（hotpotqa / 2wiki） | **+6.4 / +2.3 / +0.5 pp；0.95 / 0.99** |
 | 证据判断 | 语义 test 准确率，2,384 条决策 | **83.52%** |
 | 游戏策略 | test / OOD 加权宏平均成功率 | **53.26% / 26.72%** |
 | 概率推理 | 概率 test 准确率 / 平均 TV，8,145 条决策 | **85.62% / 0.1264** |
@@ -33,7 +34,9 @@ Qwen reader 生成。迭代检索是双刃剑——可答题 EM 从 40.6 升到 
 也从 53.5% 升到 62.4%——因此用校准的可答性门控作循环的**控制器**：gated_refuse 臂既吃满
 迭代收益（被答题 EM 52.1），又把幻觉压到 6.9%、混合流量 token 省 73%，可答题保留率 70.3%
 （旧 BM25 门控只有 27.7%）。在纯可答流量上门控没有收益且更贵——它的全部价值都在
-混合流量。本地 gold 全可答，不可答样本是移除金标文档的合成构造。详见
+混合流量。本地 gold 全可答，不可答样本是移除金标文档的合成构造。musique 的冻结配置
+零调参迁移到 hotpotqa 与 2wikimultihopqa，门控是迁移最强的组件
+（各数据集 τ 自校准是设计意图而非调参，详见[迁移报告](rag_eval/TRANSFER_REPORT.md)）。详见
 [4B 融合](rag_eval/FUSION4B_REPORT.md) · [dense 门控复测](rag_eval/GATE_DENSE_REPORT.md) ·
 [迭代 RAG](rag_eval/ITER_REPORT.md) · [BM25 门控](rag_eval/GATE_REPORT.md)。
 其余模型指标使用 v4。TV 越低表示概率校准越好；

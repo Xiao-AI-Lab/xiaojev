@@ -537,6 +537,74 @@ Three conclusions, all measured:
    no scoring cost there. A 4B gate or a v5 short-context-retrained gate is
    the documented fix.
 
+## 13. Cross-dataset transfer: musique frozen config → hotpotqa / 2wiki
+
+Zero model tuning on the target datasets: fusion config frozen from musique
+calibration (w=0.5, c=1); 4B scorer and v3 gate never trained on the new
+datasets; the only per-dataset estimate is the gate's τ, calibrated on each
+dataset's own calibration subset at target precision 0.90, then frozen.
+Evaluation uses each dataset's semantic-hash non-train split (hotpotqa 299,
+2wiki 306 questions), with asserted qid disjointness from musique, train-split
+exclusion, and eval-question-only corpora. Code: `rag_eval/transfer.py` +
+`musique_fusion_gate.py`; numbers: `rag_eval/transfer/transfer_metrics.json`
+and per-dataset `*_metrics.json`; report:
+[TRANSFER_REPORT.md](../rag_eval/TRANSFER_REPORT.md).
+
+**Retrieval ΔR@5 (fusion − dense):** musique test **+6.44 [+3.2, +9.8]**,
+2wiki test **+2.27 [+0.3, +4.6]** (all-split +2.29 [+0.8, +3.8]) — both
+significant; hotpotqa test +0.51 [−1.0, +2.0] — direction positive but
+flattened by the dense ceiling (98.5% R@5 leaves no headroom; a ceiling
+effect, not a negative effect). Gain size anti-correlates with dense
+headroom; direction is consistent on all three.
+
+**QA ΔEM (fusion top-4 vs dense top-4, paired bootstrap):** musique all
+**+8.9 [+4.4, +13.3]**, 2wiki all **+5.2 [+2.0, +8.8]**, hotpotqa −0.3
+[−2.7, +2.0] (saturation, symmetric CI).
+
+**The gate transfers best.** Single round, per-dataset τ self-calibration:
+
+| Dataset | τ | test AUC | test coverage | test answered precision | hallucination (nogate → gate) |
+|---|---:|---:|---:|---:|---|
+| musique | 0.47 | 0.800 | 35.6% | 83.7% | 49.5% → 5.0% |
+| hotpotqa | 0.19 | **0.954** | **68.4%** | **97.1%** | 44.9% → **2.0%** |
+| 2wiki | 0.02 | **0.985** | **93.9%** | **92.1%** | 15.2% → **4.0%** |
+
+Honesty notes, kept verbatim from the report: τ spread (0.47/0.19/0.02) is
+the intended per-dataset decision-threshold calibration, not tuning — but
+2wiki's τ = 0.02 touches the calibration grid's lower bound (its synthetic
+unanswerable distribution is so low that every feasible τ qualifies); and the
+90% answered-precision target on calibration drifts on test (musique 83.7%)
+— normal ~100-question sampling drift, deliberately not re-corrected. The v3
+gate's short-context weakness is sharpest on musique precisely because its
+top-5 evidence completeness is the lowest of the three.
+
+## 14. The 4B gate becomes the default (iterative RAG)
+
+Same four arms and protocol as §12c, only the gate re-scored by the 4B LoRA
+checkpoint (probe artifacts of retrieval/relevance/subqueries reused; reader
+determinism lets unchanged trajectories reuse predictions — 1,686 reused, 325
+fresh calls). Code: `rag_eval/run_iterative_4bgate.py`; numbers:
+`rag_eval/iter_metrics_4bgate.json`; report:
+[ITER_4BGATE_REPORT.md](../rag_eval/ITER_4BGATE_REPORT.md).
+
+Headline changes (test, v3 gate → 4B gate):
+
+- **Round-1 acceptance of answerable questions 26/101 → 61/101**; avg_rounds
+  2.16 → 1.64 — "one round is enough" questions finally stop at round 1.
+- Refusal precision 75.2% → **82.6%**; answerable keep rate 70.3% →
+  **81.2%**; gate AUC (max over rounds) 0.882 → **0.914**; τ 0.64 → 0.37 on a
+  smooth monotonic calibration curve (v3's curve was compressed and jittery).
+- Mixed-traffic prompt tokens: gated −13%, gated_refuse −20%.
+- **Costs, stated plainly:** gated_refuse hallucination 6.9% → 8.9% on test
+  (dev moves the other way, 7.4% → 6.4%); gated-arm test EM 0.515 → 0.465
+  (dev flat at 0.479) — earlier stopping feeds the reader 5 passages instead
+  of 10–15, so "answerable" is not "answered best". Mitigations documented:
+  raise τ (0.37 → 0.65 moves calibration precision 0.898 → 0.957), or accept
+  then take one extra round before answering.
+
+Conclusion recorded in the report: the 4B gate is the default going forward;
+the v3-gate numbers stay as the control.
+
 ## Reproducibility notes
 
 - NanoJev rerun fidelity: re-executing the public NanoJev weights through our
