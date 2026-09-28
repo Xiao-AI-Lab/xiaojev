@@ -22,7 +22,7 @@ xiaojev 对动态候选集打分并返回概率分布，供应用选择动作、
 | RAG 问答流程 | MuSiQue test EM / F1，101 题，top-4 上下文 | **40.6% / 49.7%** |
 | 迭代 RAG + 门控 | 可答题 EM（3 轮）；不可答题幻觉率；混合流量 tokens | **52.5%；6.9%；−73%** |
 | 跨数据集迁移 | 零调参融合 ΔR@5（musique / 2wiki / hotpotqa）；门控 AUC（hotpotqa / 2wiki） | **+6.4 / +2.3 / +0.5 pp；0.95 / 0.99** |
-| RAG 对标 DAG 管线 | 干净子集 EM 差 vs dagv2（musique / hotpotqa / 2wiki） | **−1.4 / +3.3 / −0.3（1 胜 2 平 0 负，含 nodeloop）** |
+| RAG 对标 DAG 管线 | 干净子集 EM 差 vs dagv2（musique / hotpotqa / 2wiki） | **−1.4 / +3.3 / +0.0（1 胜 2 平 0 负）；2wiki F1 反超、token −39.9%** |
 | 证据判断 | 语义 test 准确率，2,384 条决策 | **83.52%** |
 | 游戏策略 | test / OOD 加权宏平均成功率 | **53.26% / 26.72%** |
 | 概率推理 | 概率 test 准确率 / 平均 TV，8,145 条决策 | **85.62% / 0.1264** |
@@ -40,8 +40,9 @@ Qwen reader 生成。迭代检索是双刃剑——可答题 EM 从 40.6 升到 
 （各数据集 τ 自校准是设计意图而非调参，详见[迁移报告](rag_eval/TRANSFER_REPORT.md)）。
 与 dagv2 重型 DAG 管线在干净子集上对标的总比分是 **1 胜 2 平 0 负**：检索可达区间
 （hotpotqa 型）我们以约一半 token 成本反超；nodeloop 在我方栈上整体复刻四位一体
-（分解×交错 grounding×引用承诺×链注入）后，检索受限战场也闭合到统计打平——完整归因见
-[dag_match 报告](docs/DAG_MATCH.md)。详见
+（分解×交错 grounding×引用承诺×链注入）后，检索受限战场闭合到统计打平；同架构省耗的
+saveloop（弹性面板，推理全程 27B）进一步把 2wiki 打成 EM 精确打平、F1 反超、prompt token
+省 39.9%——完整归因见 [dag_match 报告](docs/DAG_MATCH.md)。详见
 [4B 融合](rag_eval/FUSION4B_REPORT.md) · [dense 门控复测](rag_eval/GATE_DENSE_REPORT.md) ·
 [迭代 RAG](rag_eval/ITER_REPORT.md) · [BM25 门控](rag_eval/GATE_REPORT.md)。
 其余模型指标使用 v4。TV 越低表示概率校准越好；

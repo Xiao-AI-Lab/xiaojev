@@ -615,14 +615,15 @@ embeddings / corpus per dataset, clean-subset protocol (semantic hash seed
 20260922, contamination-audited; dagv2 scores recomputed from its archived
 records).
 
-**Final score after the nodeloop replication: 1 win, 2 draws, 0 losses**
+**Final score after nodeloop + saveloop: 1 win, 2 draws, 0 losses** — the
+2wiki draw is now an exact EM tie with an F1 win at −39.9% tokens
 (clean-subset EM vs dagv2):
 
 | Dataset (n) | dagv2 | Our best | ΔEM [95% CI] | Result |
 |---|---:|---:|---|---|
 | musique (293) | 56.66 | 55.29 (nodeloop no_commit) | −1.37 [−5.1, +2.4] | draw (was −7.17 loss) |
 | hotpotqa (299) | 63.21 | 66.56 (single_k20) | +3.34 [−1.0, +7.7] | win (directional; CI crosses 0) |
-| 2wiki (306) | 73.53 | 73.20 (nodeloop commit) | −0.33 [−2.0, +1.3] | draw (was −4.90 loss) |
+| 2wiki (306) | 73.53 | **73.53** (saveloop commit) | **+0.00 [−2.0, +2.0]** | **exact EM tie; F1 win 81.66 vs 81.12; −39.9% prompt tokens** |
 
 Pre-nodeloop mechanism probes (kept as the attribution record): decfirst
 −12.09 and curated-panel −7.84 losses on 2wiki — component isolations, not
@@ -651,11 +652,24 @@ panel All@20 at 70–80% (the remaining 2/3-hop deficit lives there); 2wiki
 inference-type −6.4 pp on n=31. Disclosure: dagv2 answers nodes with an 8B
 completions model, our nodeloop uses the 27B chat reader for nodes.
 
+**Saveloop then made it cheaper, same architecture (4B gates only; 27B does
+all reasoning).** An elastic panel (k = clamp(count(P(rel) ≥ 0.9), 3, 20),
+mean 7 passages vs fixed 20) cuts node prompt tokens **−63.8%** and total
+prompt tokens **−39.9%** (wall time −41%) with **zero EM loss** — commit arm
+lands exactly on dagv2's 73.53, F1 81.66 > 81.12. The k-rule retains 99.4% of
+committed sources. The second cut, per-question routing around the loop, is
+an honest negative: the 4B gate's AUC for "single-round is already correct"
+is only 0.669, so no τ qualifies (oracle headroom 79.7% exists but is
+unreachable with this signal; routing coverage ended at 0/306). Ruling:
+elastic panel generalizes (musique nodeloop after re-calibration, hotpotqa);
+routing does not.
+
 **Capability boundary (updated):** on retrieval-reachable questions we win at
-~half the token cost; retrieval-limited multi-entity grounding is now a draw
-via the node loop; gate/refusal/cost scenarios remain our unique advantage
-(§12–14). Full-1000 auxiliary tables contain our training questions and are
-marked contaminated/optimistic; headline numbers are clean subsets only.
+~half the token cost; retrieval-limited multi-entity grounding is now an
+exact-EM tie (F1 win) at −39.9% tokens via nodeloop + elastic panel;
+gate/refusal/cost scenarios remain our unique advantage (§12–14). Full-1000
+auxiliary tables contain our training questions and are marked
+contaminated/optimistic; headline numbers are clean subsets only.
 
 ## Reproducibility notes
 

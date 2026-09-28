@@ -1,0 +1,108 @@
+{
+  "arms": {
+    "commit": {
+      "n": 306,
+      "em": 0.7352941176470589,
+      "f1": 0.816643323996265,
+      "delta_vs_dagv2": 0.0,
+      "boot_dagv2": [
+        -0.0196078431372549,
+        0.0196078431372549
+      ],
+      "delta_vs_nodeloop_baseline": 0.0032679738562091504,
+      "boot_base": [
+        -0.006535947712418301,
+        0.016339869281045753
+      ]
+    },
+    "no_commit": {
+      "n": 306,
+      "em": 0.7287581699346405,
+      "f1": 0.8101073762838468,
+      "delta_vs_dagv2": -0.006535947712418301,
+      "boot_dagv2": [
+        -0.026143790849673203,
+        0.013071895424836602
+      ],
+      "delta_vs_nodeloop_baseline": 0.0,
+      "boot_base": [
+        -0.00980392156862745,
+        0.00980392156862745
+      ]
+    }
+  },
+  "cost": {
+    "nodeloop_baseline": {
+      "calls_27b_total": 1560,
+      "calls_per_q": 5.098039215686274,
+      "node_prompt_tokens_est": 3786016,
+      "node_prompt_tokens_per_q_est": 12372.601307189543,
+      "final_prompt_tokens": 2257113,
+      "total_prompt_tokens_per_q": 19748.787581699347
+    },
+    "saveloop": {
+      "calls_27b_total": 1504,
+      "calls_per_q": 4.915032679738562,
+      "node_prompt_tokens": 1371830,
+      "node_prompt_tokens_per_q": 4483.104575163398,
+      "node_completion_tokens": 16479,
+      "final_prompt_tokens": 2257193,
+      "final_completion_tokens": 6278,
+      "total_prompt_tokens_per_q": 11859.552287581699,
+      "mean_panel_k": 7.001121076233184
+    },
+    "prompt_token_reduction_pct": 39.947947495411725,
+    "node_prompt_reduction_pct": 63.76586892395595
+  },
+  "hop": {
+    "commit": {
+      "bridge_comparison": {
+        "n": 73,
+        "em": 0.9726027397260274,
+        "dagv2_em": 0.9315068493150684
+      },
+      "comparison": {
+        "n": 74,
+        "em": 0.918918918918919,
+        "dagv2_em": 0.918918918918919
+      },
+      "compositional": {
+        "n": 128,
+        "em": 0.5,
+        "dagv2_em": 0.5078125
+      },
+      "inference": {
+        "n": 31,
+        "em": 0.7096774193548387,
+        "dagv2_em": 0.7741935483870968
+      }
+    },
+    "no_commit": {
+      "bridge_comparison": {
+        "n": 73,
+        "em": 0.9726027397260274,
+        "dagv2_em": 0.9315068493150684
+      },
+      "comparison": {
+        "n": 74,
+        "em": 0.918918918918919,
+        "dagv2_em": 0.918918918918919
+      },
+      "compositional": {
+        "n": 128,
+        "em": 0.4921875,
+        "dagv2_em": 0.5078125
+      },
+      "inference": {
+        "n": 31,
+        "em": 0.6774193548387096,
+        "dagv2_em": 0.7741935483870968
+      }
+    }
+  },
+  "routing": {
+    "tau_route": 1.0,
+    "coverage_on_cal": 0.0,
+    "routed_fraction": 0.0
+  }
+}

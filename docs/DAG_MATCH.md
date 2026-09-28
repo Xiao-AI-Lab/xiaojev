@@ -31,13 +31,14 @@ tau calibration records, and `contamination_audit.json`).
 
 ## Scoreboard (clean subsets, EM vs dagv2)
 
-**Final, after the nodeloop replication: 1 win, 2 draws, 0 losses.**
+**Final, after nodeloop + saveloop: 1 win, 2 draws, 0 losses — and the 2wiki
+draw is now an exact EM tie with an F1 win at −39.9% tokens.**
 
 | Dataset (n) | dagv2 | Our best arm | ΔEM [95% CI] | Result |
 |---|---:|---:|---|---|
 | musique (293) | 56.66 | 55.29 (nodeloop no_commit) | −1.37 [−5.1, +2.4] | **draw** (was −7.2 loss) |
 | hotpotqa (299) | 63.21 | 66.56 (single_k20) | +3.34 [−1.0, +7.7] | **win (directional — CI crosses 0)** |
-| 2wiki (306) | 73.53 | 73.20 (nodeloop commit) | −0.33 [−2.0, +1.3] | **draw** (was −4.9 loss) |
+| 2wiki (306) | 73.53 | **73.53** (saveloop commit) | **+0.00 [−2.0, +2.0]** | **exact EM tie, F1 win 81.66 vs 81.12, −39.9% prompt tokens** |
 
 Pre-nodeloop scoreboard (kept for the attribution narrative): musique −7.17
 and 2wiki −4.90 were significant losses, plus two mechanism-probe losses
@@ -96,6 +97,45 @@ win; retrieval-limited territory is a *draw* once the node loop replicates the
 joint structure; refusal/gating/cost scenarios remain our unique advantage
 (the GATE_* line). The earlier statement that "the gap cannot be closed"
 referred to single-component patches — it is superseded by this result.
+
+## Saveloop: same architecture, 40% fewer tokens (2wiki)
+
+**Framing (user-ruled):** same-architecture cost saving, not heterogeneous
+replacement — the 4B model only makes gate probability judgments; every
+reasoning step (planner / node answers / commitment contracts / final answer)
+is done by the 27B. (The earlier heterogeneous line with 4B answering nodes
+is quarantined for a separate "heterogeneous pipeline" study.) Baseline:
+nodeloop commit, EM 73.20 at 5.1 27B calls/question.
+
+Two cuts were tried:
+
+1. **Per-question routing (honest negative):** route "easy" questions (4B
+   gate P(single-hop-answerable) ≥ τ_route) to the single-round cached answer.
+   It contributes nothing and is *rejected by its own calibration rule*: on
+   clean-98 calibration, no τ makes the routed subset's single EM ≥ commit EM
+   (the gate's AUC for "single is correct" is only 0.669; even at τ = 0.99 the
+   routed subset trails commit by 3.8 pp). Routing coverage: 0/306. The
+   oracle headroom exists (79.7% of questions are answered identically by
+   single and commit) but the current signal cannot reach it.
+2. **Elastic panel (all of the gain):** k = clamp(count(P(rel) ≥ 0.9), 3, 20),
+   falling back to 20 when empty — the panel shrinks from a fixed 20 to an
+   average of **7 passages**. The k rule keeps 99.4% of committed sources
+   (a-priori calibrated), and the 27B node answers run the identical
+   commitment contract on the reduced panel.
+
+**Outcome (clean-306):** commit arm EM **73.53 = dagv2's exact value**, F1
+**81.66 > 81.12**, ΔEM vs dagv2 +0.00 [−2.0, +2.0]; ΔEM vs the nodeloop
+baseline +0.33 [−0.7, +1.6] (noise). Cost: node prompt tokens **−63.8%**
+(12,373 → 4,483/question), total prompt tokens **−39.9%** (19,749 → 11,860),
+calls −3.5% (the saving is tokens, not calls), wall time −41%. Per-type EM is
+unchanged from the baseline (bridge_comparison +4.1 win, inference −6.4).
+
+**Rulings:** the elastic panel generalizes (apply to musique nodeloop after
+re-calibrating the k-rule's committed-source retention there — its commitment
+precision is lower, 75.3%) and to hotpotqa; per-question routing does not
+(with this signal source). Further cuts that replace 27B reasoning bodies
+(model cascades, 4B-as-reasoner) belong to the quarantined heterogeneous
+line, not to this report's same-architecture scope.
 
 ## Four-component attribution (isolated, per-component probes)
 
