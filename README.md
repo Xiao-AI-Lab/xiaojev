@@ -24,6 +24,7 @@ autoregressive text generation.
 | RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **40.6% / 49.7%** |
 | Iterative RAG + gate | Answerable EM (3 rounds); unanswerable hallucination; mixed-traffic tokens | **52.5%; 6.9%; −73%** |
 | Cross-dataset transfer | Fusion ΔR@5 zero-tuning on musique / 2wiki / hotpotqa; gate AUC on hotpotqa / 2wiki | **+6.4 / +2.3 / +0.5 pp; 0.95 / 0.99** |
+| RAG vs DAG pipeline | Clean-subset EM Δ vs dagv2, musique / hotpotqa / 2wiki | **−7.2 / +3.3 / −4.9 (1W–4L)** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |
@@ -46,7 +47,12 @@ Unanswerable cases are synthetic (gold documents removed), because the local
 gold set is fully answerable. The musique configuration transfers zero-tuning
 to hotpotqa and 2wikimultihopqa, where the gate is the strongest component
 (per-dataset τ self-calibration by design; details:
-[transfer report](rag_eval/TRANSFER_REPORT.md)). Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
+[transfer report](rag_eval/TRANSFER_REPORT.md)). Benchmarked against dagv2's
+heavy DAG pipeline on clean subsets the score is 1 win / 4 losses: on
+retrieval-reachable questions we win at roughly half the token cost, while
+multi-entity grounding under retrieval limits remains a structural gap —
+full attribution in the [dag_match report](docs/DAG_MATCH.md).
+Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
 [dense gate re-test](rag_eval/GATE_DENSE_REPORT.md) ·
 [iterative RAG](rag_eval/ITER_REPORT.md) · [BM25 gate](rag_eval/GATE_REPORT.md).
 Other model metrics use v4. Lower TV means better probability calibration.
@@ -245,10 +251,11 @@ are in **[docs/V4_REPAIR.md](docs/V4_REPAIR.md)**. The RAG application line —
 answerability gates, 4B rank fusion, dense-stage gate re-test, and iterative
 RAG — is in **[rag_eval/](rag_eval/README.md)** (one report per experiment).
 The 4B LoRA scaling study and 4B browser repair are in
-[docs/RESULTS.md](docs/RESULTS.md) sections 10–11, alongside the historical
-v1–v3 tables and the RAG optimization section 12. Summary JSONs live in
-`results/`; local fixture traces and frozen document-ranking inputs are
-included.
+[docs/RESULTS.md](docs/RESULTS.md) sections 10–11, the RAG optimization line
+in section 12–14, and the dagv2 benchmark in section 15 with
+[docs/DAG_MATCH.md](docs/DAG_MATCH.md); the historical v1–v3 tables are kept
+in the same file. Summary JSONs live in `results/`; local fixture traces and
+frozen document-ranking inputs are included.
 
 ## Checkpoints
 

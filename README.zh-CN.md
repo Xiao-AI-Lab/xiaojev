@@ -22,6 +22,7 @@ xiaojev 对动态候选集打分并返回概率分布，供应用选择动作、
 | RAG 问答流程 | MuSiQue test EM / F1，101 题，top-4 上下文 | **40.6% / 49.7%** |
 | 迭代 RAG + 门控 | 可答题 EM（3 轮）；不可答题幻觉率；混合流量 tokens | **52.5%；6.9%；−73%** |
 | 跨数据集迁移 | 零调参融合 ΔR@5（musique / 2wiki / hotpotqa）；门控 AUC（hotpotqa / 2wiki） | **+6.4 / +2.3 / +0.5 pp；0.95 / 0.99** |
+| RAG 对标 DAG 管线 | 干净子集 EM 差 vs dagv2（musique / hotpotqa / 2wiki） | **−7.2 / +3.3 / −4.9（1 胜 4 负）** |
 | 证据判断 | 语义 test 准确率，2,384 条决策 | **83.52%** |
 | 游戏策略 | test / OOD 加权宏平均成功率 | **53.26% / 26.72%** |
 | 概率推理 | 概率 test 准确率 / 平均 TV，8,145 条决策 | **85.62% / 0.1264** |
@@ -36,7 +37,10 @@ Qwen reader 生成。迭代检索是双刃剑——可答题 EM 从 40.6 升到 
 （旧 BM25 门控只有 27.7%）。在纯可答流量上门控没有收益且更贵——它的全部价值都在
 混合流量。本地 gold 全可答，不可答样本是移除金标文档的合成构造。musique 的冻结配置
 零调参迁移到 hotpotqa 与 2wikimultihopqa，门控是迁移最强的组件
-（各数据集 τ 自校准是设计意图而非调参，详见[迁移报告](rag_eval/TRANSFER_REPORT.md)）。详见
+（各数据集 τ 自校准是设计意图而非调参，详见[迁移报告](rag_eval/TRANSFER_REPORT.md)）。
+与 dagv2 重型 DAG 管线在干净子集上对标的总比分是 1 胜 4 负：检索可达区间（hotpotqa 型）
+我们以约一半 token 成本反超，多实体 grounding 的检索受限区间仍有结构差距——完整归因见
+[dag_match 报告](docs/DAG_MATCH.md)。详见
 [4B 融合](rag_eval/FUSION4B_REPORT.md) · [dense 门控复测](rag_eval/GATE_DENSE_REPORT.md) ·
 [迭代 RAG](rag_eval/ITER_REPORT.md) · [BM25 门控](rag_eval/GATE_REPORT.md)。
 其余模型指标使用 v4。TV 越低表示概率校准越好；
@@ -210,7 +214,8 @@ python comparison/compare_report.py results/compare_v4_frozen_episodes.jsonl \
 当前模型的指标、权重选择、评测范围及证据见 **[评测报告](docs/V4_REPAIR.md)**。
 可答性门控、4B 排名融合、dense 门控复测与迭代 RAG 等 RAG 应用线见
 **[rag_eval/](rag_eval/README.md)**（每个实验一份报告）；4B LoRA 扩容实验与 4B 浏览器修复见
-[docs/RESULTS.md](docs/RESULTS.md) 第 10–11 节，RAG 优化线第 12 节与历史 v1–v3 研究同在其中。
+[docs/RESULTS.md](docs/RESULTS.md) 第 10–11 节，RAG 优化线第 12–14 节，dagv2 对标第 15 节与
+[dag_match 报告](docs/DAG_MATCH.md)，历史 v1–v3 研究同在其中。
 `results/` 包含汇总指标、本地页面轨迹和冻结的文档排名数据。
 
 ## Checkpoints

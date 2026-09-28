@@ -605,6 +605,42 @@ Headline changes (test, v3 gate → 4B gate):
 Conclusion recorded in the report: the 4B gate is the default going forward;
 the v3-gate numbers stay as the control.
 
+## 15. Benchmarking against a DAG-decomposition pipeline (dagv2)
+
+Full distilled write-up: [DAG_MATCH.md](DAG_MATCH.md); summary JSONs:
+`results/dag_match/`. Our stack (dense + 4B fusion + iterative assembly +
+27B reader) vs dagv2 (planner decomposition + grounded multi-channel node
+retrieval + chain injection + source-cited panel curation), same reader /
+embeddings / corpus per dataset, clean-subset protocol (semantic hash seed
+20260922, contamination-audited; dagv2 scores recomputed from its archived
+records).
+
+**Final score: 1 win, 4 losses** (clean-subset EM vs dagv2):
+
+| Dataset (n) | dagv2 | Our best | ΔEM [95% CI] | Result |
+|---|---:|---:|---|---|
+| musique (293) | 56.66 | 49.49 | −7.17 [−12.3, −2.0] | loss |
+| hotpotqa (299) | 63.21 | 66.56 | +3.34 [−1.0, +7.7] | win (directional; CI crosses 0) |
+| 2wiki (306) | 73.53 | 68.63 | −4.90 [−8.8, −1.0] | loss |
+| 2wiki decfirst probe | 73.53 | 61.44 | −12.09 [−16.7, −7.5] | loss (mechanism probe) |
+| 2wiki curated-panel probe | 73.53 | 65.69 | −7.84 [−11.8, −3.9] | loss (mechanism probe) |
+
+**Four-component attribution** (isolated probes on frozen trajectories):
+budget alignment **+0.3 pp** (our k20 arms already exceed dagv2's evidence
+completeness), chain injection **±0** (oracle-chain upper bound still below
+dagv2), upfront decomposition **−7.2 pp** (negative without interleaved
+grounding), citation-priority curation **−2.9 pp** (text-mention proxies pin
+noise; dagv2 pins explicit source commitments). The four mechanisms only work
+as a joint structure; single-point patches cannot close the gap.
+
+**Capability boundary:** on retrieval-reachable questions (dense R@5 > 94%)
+we match/beat the DAG pipeline at ~half the token cost, and our gate/refusal
+strengths stand as reported in §12–14; on retrieval-limited multi-entity
+grounding (2wiki inference/bridge types, musique deep chains), dagv2's joint
+structure is worth ~5–12 pp EM. Full-1000 auxiliary tables contain our
+training questions and are marked contaminated/optimistic; headline numbers
+are clean subsets only.
+
 ## Reproducibility notes
 
 - NanoJev rerun fidelity: re-executing the public NanoJev weights through our
