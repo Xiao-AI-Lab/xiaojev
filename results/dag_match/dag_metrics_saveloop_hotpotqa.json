@@ -1,0 +1,92 @@
+{
+  "arms": {
+    "commit": {
+      "n": 299,
+      "em": 0.6521739130434783,
+      "f1": 0.7944475442803203,
+      "delta_vs_dagv2": 0.020066889632107024,
+      "boot_dagv2": [
+        -0.010033444816053512,
+        0.05016722408026756
+      ],
+      "delta_vs_single_k20": -0.013377926421404682,
+      "boot_base": [
+        -0.056856187290969896,
+        0.030100334448160536
+      ]
+    },
+    "no_commit": {
+      "n": 299,
+      "em": 0.6622073578595318,
+      "f1": 0.8000834542640564,
+      "delta_vs_dagv2": 0.030100334448160536,
+      "boot_dagv2": [
+        0.0,
+        0.06020066889632107
+      ],
+      "delta_vs_single_k20": -0.0033444816053511705,
+      "boot_base": [
+        -0.046822742474916385,
+        0.04013377926421405
+      ]
+    }
+  },
+  "cost": {
+    "nodeloop_baseline": {
+      "calls_27b_total": 3649,
+      "calls_per_q": 12.20401337792642,
+      "node_prompt_tokens_est": 836629,
+      "node_prompt_tokens_per_q_est": 2798.0903010033444,
+      "final_prompt_tokens": 9674993,
+      "total_prompt_tokens_per_q": 35155.926421404685
+    },
+    "saveloop": {
+      "calls_27b_total": 1247,
+      "calls_per_q": 4.170568561872909,
+      "node_prompt_tokens": 842250,
+      "node_prompt_tokens_per_q": 2816.8896321070233,
+      "node_completion_tokens": 11528,
+      "final_prompt_tokens": 2004209,
+      "final_completion_tokens": 5972,
+      "total_prompt_tokens_per_q": 9519.929765886287,
+      "mean_panel_k": 6.522342064714946
+    },
+    "prompt_token_reduction_pct": 72.92083942896728,
+    "node_prompt_reduction_pct": -0.6718629165376688
+  },
+  "hop": {
+    "commit": {
+      "bridge": {
+        "n": 239,
+        "em": 0.6276150627615062,
+        "dagv2_em": 0.602510460251046
+      },
+      "comparison": {
+        "n": 60,
+        "em": 0.75,
+        "dagv2_em": 0.75
+      }
+    },
+    "no_commit": {
+      "bridge": {
+        "n": 239,
+        "em": 0.6359832635983264,
+        "dagv2_em": 0.602510460251046
+      },
+      "comparison": {
+        "n": 60,
+        "em": 0.7666666666666667,
+        "dagv2_em": 0.75
+      }
+    }
+  },
+  "routing": {
+    "tau_route": 1.0,
+    "coverage_on_cal": 1.0,
+    "routed_fraction": 0.0
+  },
+  "source_retention": {
+    "mean": 1.0,
+    "n": 620
+  }
+}

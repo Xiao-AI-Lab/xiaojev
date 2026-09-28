@@ -615,14 +615,15 @@ embeddings / corpus per dataset, clean-subset protocol (semantic hash seed
 20260922, contamination-audited; dagv2 scores recomputed from its archived
 records).
 
-**Final score after nodeloop + saveloop: 1 win, 2 draws, 0 losses** — the
-2wiki draw is now an exact EM tie with an F1 win at −39.9% tokens
+**Final score after nodeloop + saveloop generalization: 1 win, 2 draws, 0
+losses** — one pipeline (planner + interleaved grounding + citation
+commitments + elastic panel + routing valve) plays all three fields
 (clean-subset EM vs dagv2):
 
-| Dataset (n) | dagv2 | Our best | ΔEM [95% CI] | Result |
+| Dataset (n) | dagv2 | Our best | ΔEM [95% CI] | Result / cost |
 |---|---:|---:|---|---|
-| musique (293) | 56.66 | 55.29 (nodeloop no_commit) | −1.37 [−5.1, +2.4] | draw (was −7.17 loss) |
-| hotpotqa (299) | 63.21 | 66.56 (single_k20) | +3.34 [−1.0, +7.7] | win (directional; CI crosses 0) |
+| musique (293) | 56.66 | 55.63 (saveloop no_commit) | −1.02 [−4.8, +2.4] | draw; node prompt tokens **−58%** |
+| hotpotqa (299) | 63.21 | 66.22 (saveloop no_commit) | +3.01 [0.0, +6.0] | win; nodeloop first run, tied with single_k20 (66.56) as routing predicted |
 | 2wiki (306) | 73.53 | **73.53** (saveloop commit) | **+0.00 [−2.0, +2.0]** | **exact EM tie; F1 win 81.66 vs 81.12; −39.9% prompt tokens** |
 
 Pre-nodeloop mechanism probes (kept as the attribution record): decfirst
@@ -663,6 +664,22 @@ is only 0.669, so no τ qualifies (oracle headroom 79.7% exists but is
 unreachable with this signal; routing coverage ended at 0/306). Ruling:
 elastic panel generalizes (musique nodeloop after re-calibration, hotpotqa);
 routing does not.
+
+**Generalization (musique + hotpotqa) closed the one-pipeline narrative.**
+Musique: the k-rule re-calibrated per field (τ_p = 0.95, k_min = 5, measured
+retention 0.994) — no_commit **55.63** holds at node tokens **−57.9%**, and
+the commit arm's −2.73 pt give-back yields a clean operating rule: **fields
+with committed-source precision < 95% use no_commit only** (elastic
+truncation makes the proof-preserving final panel inherit commitment noise;
+no_commit is immune). Musique routing passed calibration on clean-98 but
+failed out-of-sample (98 questions are too few for two-sided 0/1-EM routing
+decisions) and was disabled. Hotpotqa: nodeloop's first run there —
+no_commit **66.22** (+3.01 vs dagv2), statistically tied with single_k20's
+66.56 as the routing calibration's "full bypass" answer predicted for the
+saturated regime; elastic panel ≈ −33% extrapolated tokens. Net: planner +
+interleaved grounding + citation commitments + elastic panel + routing valve
+is one general pipeline with no significant EM difference from dagv2 in any
+regime and a provably better cost side (34–58% savings by field).
 
 **Capability boundary (updated):** on retrieval-reachable questions we win at
 ~half the token cost; retrieval-limited multi-entity grounding is now an

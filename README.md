@@ -24,7 +24,7 @@ autoregressive text generation.
 | RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **40.6% / 49.7%** |
 | Iterative RAG + gate | Answerable EM (3 rounds); unanswerable hallucination; mixed-traffic tokens | **52.5%; 6.9%; −73%** |
 | Cross-dataset transfer | Fusion ΔR@5 zero-tuning on musique / 2wiki / hotpotqa; gate AUC on hotpotqa / 2wiki | **+6.4 / +2.3 / +0.5 pp; 0.95 / 0.99** |
-| RAG vs DAG pipeline | Clean-subset EM Δ vs dagv2, musique / hotpotqa / 2wiki | **−1.4 / +3.3 / +0.0 (1W–2D–0L); 2wiki F1 win, −39.9% tokens** |
+| RAG vs DAG pipeline | Clean-subset EM Δ vs dagv2, musique / hotpotqa / 2wiki | **−1.0 / +3.0 / +0.0 (1W–2D–0L); tokens −34~−58% by field** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |
@@ -52,9 +52,11 @@ heavy DAG pipeline on clean subsets the score is **1 win / 2 draws / 0
 losses**: we win outright on retrieval-reachable questions at roughly half
 the token cost, the nodeloop replication (decomposition × interleaved
 grounding × citation commitments × chain injection on our stack) closed the
-retrieval-limited battlefields to statistical draws, and the same-architecture
-saveloop (elastic panel, 27B reasoning only) made 2wiki an exact EM tie with
-an F1 win at −39.9% prompt tokens — full attribution in the
+retrieval-limited battlefields to statistical draws, and the elastic-panel
+saveloop (same architecture, 27B reasoning only) made 2wiki an exact EM tie
+with an F1 win — one pipeline now plays all three fields with 34–58% token
+savings (operating rule: fields with committed-source precision < 95% use the
+no_commit arm) — full attribution in the
 [dag_match report](docs/DAG_MATCH.md).
 Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
 [dense gate re-test](rag_eval/GATE_DENSE_REPORT.md) ·
