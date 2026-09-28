@@ -615,15 +615,18 @@ embeddings / corpus per dataset, clean-subset protocol (semantic hash seed
 20260922, contamination-audited; dagv2 scores recomputed from its archived
 records).
 
-**Final score: 1 win, 4 losses** (clean-subset EM vs dagv2):
+**Final score after the nodeloop replication: 1 win, 2 draws, 0 losses**
+(clean-subset EM vs dagv2):
 
 | Dataset (n) | dagv2 | Our best | ΔEM [95% CI] | Result |
 |---|---:|---:|---|---|
-| musique (293) | 56.66 | 49.49 | −7.17 [−12.3, −2.0] | loss |
-| hotpotqa (299) | 63.21 | 66.56 | +3.34 [−1.0, +7.7] | win (directional; CI crosses 0) |
-| 2wiki (306) | 73.53 | 68.63 | −4.90 [−8.8, −1.0] | loss |
-| 2wiki decfirst probe | 73.53 | 61.44 | −12.09 [−16.7, −7.5] | loss (mechanism probe) |
-| 2wiki curated-panel probe | 73.53 | 65.69 | −7.84 [−11.8, −3.9] | loss (mechanism probe) |
+| musique (293) | 56.66 | 55.29 (nodeloop no_commit) | −1.37 [−5.1, +2.4] | draw (was −7.17 loss) |
+| hotpotqa (299) | 63.21 | 66.56 (single_k20) | +3.34 [−1.0, +7.7] | win (directional; CI crosses 0) |
+| 2wiki (306) | 73.53 | 73.20 (nodeloop commit) | −0.33 [−2.0, +1.3] | draw (was −4.90 loss) |
+
+Pre-nodeloop mechanism probes (kept as the attribution record): decfirst
+−12.09 and curated-panel −7.84 losses on 2wiki — component isolations, not
+entries in the final score.
 
 **Four-component attribution** (isolated probes on frozen trajectories):
 budget alignment **+0.3 pp** (our k20 arms already exceed dagv2's evidence
@@ -633,13 +636,26 @@ grounding), citation-priority curation **−2.9 pp** (text-mention proxies pin
 noise; dagv2 pins explicit source commitments). The four mechanisms only work
 as a joint structure; single-point patches cannot close the gap.
 
-**Capability boundary:** on retrieval-reachable questions (dense R@5 > 94%)
-we match/beat the DAG pipeline at ~half the token cost, and our gate/refusal
-strengths stand as reported in §12–14; on retrieval-limited multi-entity
-grounding (2wiki inference/bridge types, musique deep chains), dagv2's joint
-structure is worth ~5–12 pp EM. Full-1000 auxiliary tables contain our
-training questions and are marked contaminated/optimistic; headline numbers
-are clean subsets only.
+**The nodeloop replication closed it.** Faithfully porting the joint
+structure onto our stack (27B planner emitting a validated DAG, topological
+interleaved grounding, strict `{answer, sources}` citation contracts — 100%
+first-pass, zero retries — committed-source panel pinning, chain injection):
+the node loop's net contribution is **+4.58 pp on 2wiki** and **+5.46/+5.80
+pp on musique** (CIs exclude 0), closing both battlefields from significant
+losses to statistical draws at comparable cost (~5.1 vs ~4.8 LLM calls per
+question); final-answer commitment curation adds ±0.3 pp (noise). Mechanism
+numbers: grounding with real parent answers 99.6%/96.2%, committed-source
+gold precision 98.8%/75.3% (2wiki/musique), node resolved rate 93.8%/91.0%.
+Residuals: musique's hard distractors hold commitment precision at 75.3% and
+panel All@20 at 70–80% (the remaining 2/3-hop deficit lives there); 2wiki
+inference-type −6.4 pp on n=31. Disclosure: dagv2 answers nodes with an 8B
+completions model, our nodeloop uses the 27B chat reader for nodes.
+
+**Capability boundary (updated):** on retrieval-reachable questions we win at
+~half the token cost; retrieval-limited multi-entity grounding is now a draw
+via the node loop; gate/refusal/cost scenarios remain our unique advantage
+(§12–14). Full-1000 auxiliary tables contain our training questions and are
+marked contaminated/optimistic; headline numbers are clean subsets only.
 
 ## Reproducibility notes
 
