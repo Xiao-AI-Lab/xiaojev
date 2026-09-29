@@ -39,8 +39,9 @@ Qwen reader 生成。迭代检索是双刃剑——可答题 EM 从 40.6 升到 
 零调参迁移到 hotpotqa 与 2wikimultihopqa，门控是迁移最强的组件
 （各数据集 τ 自校准是设计意图而非调参，详见[迁移报告](rag_eval/TRANSFER_REPORT.md)）。
 与 dagv2 重型 DAG 管线在干净子集上对标的总比分是 **1 胜 2 平 0 负**：检索可达区间
-（hotpotqa 型）我们以约一半 token 成本反超；nodeloop 在我方栈上整体复刻四位一体
-（分解×交错 grounding×引用承诺×链注入）后，检索受限战场闭合到统计打平；弹性面板 saveloop
+（hotpotqa 型）我们以约一半 token 成本反超；nodeloop 是迭代式 RAG 的结构化变体而非新范式
+——其 EM 增益主体来自答案条件化的 query 改写（grounding），规划/契约/历史外壳的价值在
+可追溯性与稳定性、不可分离为 EM——它把检索受限战场闭合到统计打平；弹性面板 saveloop
 （同架构、推理全程 27B）把 2wiki 打成 EM 精确打平、F1 反超——**一条通用管线打满三个战场**，
 按战场 token 省 34–58%（操作规则：承诺源精度 <95% 的战场只用 no_commit 臂）——完整归因见
 [dag_match 报告](docs/DAG_MATCH.md)。详见

@@ -616,9 +616,9 @@ embeddings / corpus per dataset, clean-subset protocol (semantic hash seed
 records).
 
 **Final score after nodeloop + saveloop generalization: 1 win, 2 draws, 0
-losses** — one pipeline (planner + interleaved grounding + citation
-commitments + elastic panel + routing valve) plays all three fields
-(clean-subset EM vs dagv2):
+losses** — one iterative-RAG pipeline (query planning + answer-conditioned
+query rewriting + provenance-tracked context construction + elastic evidence
+panel + routing valve) plays all three fields (clean-subset EM vs dagv2):
 
 | Dataset (n) | dagv2 | Our best | ΔEM [95% CI] | Result / cost |
 |---|---:|---:|---|---|
@@ -632,26 +632,33 @@ entries in the final score.
 
 **Four-component attribution** (isolated probes on frozen trajectories):
 budget alignment **+0.3 pp** (our k20 arms already exceed dagv2's evidence
-completeness), chain injection **±0** (oracle-chain upper bound still below
-dagv2), upfront decomposition **−7.2 pp** (negative without interleaved
-grounding), citation-priority curation **−2.9 pp** (text-mention proxies pin
-noise; dagv2 pins explicit source commitments). The four mechanisms only work
-as a joint structure; single-point patches cannot close the gap.
+completeness), history-in-context (chain injection) **±0** (oracle-chain
+upper bound still below dagv2), upfront query planning **−7.2 pp** (negative
+without answer-conditioned rewriting), provenance-priority curation **−2.9
+pp** (text-mention proxies pin noise; dagv2 pins explicit source
+commitments). The EM-carrying component is answer-conditioned query
+rewriting; the planning/contract/history shell buys traceability and
+stability, not separable EM.
 
-**The nodeloop replication closed it.** Faithfully porting the joint
-structure onto our stack (27B planner emitting a validated DAG, topological
-interleaved grounding, strict `{answer, sources}` citation contracts — 100%
-first-pass, zero retries — committed-source panel pinning, chain injection):
-the node loop's net contribution is **+4.58 pp on 2wiki** and **+5.46/+5.80
-pp on musique** (CIs exclude 0), closing both battlefields from significant
-losses to statistical draws at comparable cost (~5.1 vs ~4.8 LLM calls per
-question); final-answer commitment curation adds ±0.3 pp (noise). Mechanism
-numbers: grounding with real parent answers 99.6%/96.2%, committed-source
-gold precision 98.8%/75.3% (2wiki/musique), node resolved rate 93.8%/91.0%.
-Residuals: musique's hard distractors hold commitment precision at 75.3% and
-panel All@20 at 70–80% (the remaining 2/3-hop deficit lives there); 2wiki
-inference-type −6.4 pp on n=31. Disclosure: dagv2 answers nodes with an 8B
-completions model, our nodeloop uses the 27B chat reader for nodes.
+**Nodeloop — a structured iterative-RAG variant, not a new paradigm — closed
+the gap.** Rebuilding that structure on our stack (query planning with a
+validated question DAG, answer-conditioned query rewriting by explicit slot
+filling — 99.6%/96.2% real parent answers — strict `{answer, sources}`
+provenance contracts with 100% first-pass and zero retries, committed-source
+panel pinning, history rounds in context): the structured retrieve–read
+loop's net contribution is **+4.58 pp on 2wiki** and **+5.46/+5.80 pp on
+musique** (CIs exclude 0), closing both battlefields from significant losses
+to statistical draws at comparable cost (~5.1 vs ~4.8 LLM calls per
+question); final-answer provenance curation adds ±0.3 pp (noise). Mechanism
+numbers: committed-source gold precision 98.8%/75.3% (2wiki/musique),
+sub-question resolved rate 93.8%/91.0%. Residuals: musique's hard distractors
+hold citation precision at 75.3% and panel All@20 at 70–80% (the remaining
+2/3-hop deficit lives there); 2wiki inference-type −6.4 pp on n=31.
+Disclosure: dagv2 answers sub-questions with an 8B completions model, our
+loop uses the 27B chat reader for them. Honest reading of where the gain
+sits: grounding is load-bearing; history-in-context and provenance curation
+show no separable EM contribution; the shell's value is traceability and
+stability.
 
 **Saveloop then made it cheaper, same architecture (4B gates only; 27B does
 all reasoning).** An elastic panel (k = clamp(count(P(rel) ≥ 0.9), 3, 20),
@@ -667,26 +674,27 @@ routing does not.
 
 **Generalization (musique + hotpotqa) closed the one-pipeline narrative.**
 Musique: the k-rule re-calibrated per field (τ_p = 0.95, k_min = 5, measured
-retention 0.994) — no_commit **55.63** holds at node tokens **−57.9%**, and
-the commit arm's −2.73 pt give-back yields a clean operating rule: **fields
-with committed-source precision < 95% use no_commit only** (elastic
-truncation makes the proof-preserving final panel inherit commitment noise;
-no_commit is immune). Musique routing passed calibration on clean-98 but
-failed out-of-sample (98 questions are too few for two-sided 0/1-EM routing
-decisions) and was disabled. Hotpotqa: nodeloop's first run there —
-no_commit **66.22** (+3.01 vs dagv2), statistically tied with single_k20's
-66.56 as the routing calibration's "full bypass" answer predicted for the
-saturated regime; elastic panel ≈ −33% extrapolated tokens. Net: planner +
-interleaved grounding + citation commitments + elastic panel + routing valve
-is one general pipeline with no significant EM difference from dagv2 in any
+retention 0.994) — no_commit **55.63** holds at sub-answer tokens **−57.9%**,
+and the commit arm's −2.73 pt give-back yields a clean operating rule:
+**fields with committed-source precision < 95% use no_commit only** (elastic
+truncation makes the provenance-preserving final panel inherit citation
+noise; no_commit is immune). Musique routing passed calibration on clean-98
+but failed out-of-sample (98 questions are too few for two-sided 0/1-EM
+routing decisions) and was disabled. Hotpotqa: the structured loop's first
+run there — no_commit **66.22** (+3.01 vs dagv2), statistically tied with
+single_k20's 66.56 as the routing calibration's "full bypass" answer
+predicted for the saturated regime; elastic panel ≈ −33% extrapolated tokens.
+Net: query planning + answer-conditioned rewriting + provenance-tracked
+context construction + elastic panel + routing valve is one general
+iterative-RAG pipeline with no significant EM difference from dagv2 in any
 regime and a provably better cost side (34–58% savings by field).
 
 **Capability boundary (updated):** on retrieval-reachable questions we win at
 ~half the token cost; retrieval-limited multi-entity grounding is now an
-exact-EM tie (F1 win) at −39.9% tokens via nodeloop + elastic panel;
-gate/refusal/cost scenarios remain our unique advantage (§12–14). Full-1000
-auxiliary tables contain our training questions and are marked
-contaminated/optimistic; headline numbers are clean subsets only.
+exact-EM tie (F1 win) at −39.9% tokens via the answer-conditioned loop +
+elastic panel; gate/refusal/cost scenarios remain our unique advantage
+(§12–14). Full-1000 auxiliary tables contain our training questions and are
+marked contaminated/optimistic; headline numbers are clean subsets only.
 
 ## Reproducibility notes
 
