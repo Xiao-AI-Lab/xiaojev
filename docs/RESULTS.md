@@ -656,9 +656,24 @@ hold citation precision at 75.3% and panel All@20 at 70–80% (the remaining
 2/3-hop deficit lives there); 2wiki inference-type −6.4 pp on n=31.
 Disclosure: dagv2 answers sub-questions with an 8B completions model, our
 loop uses the 27B chat reader for them. Honest reading of where the gain
-sits: grounding is load-bearing; history-in-context and provenance curation
-show no separable EM contribution; the shell's value is traceability and
-stability.
+sits: grounding is the only significant component; history-in-context and
+provenance curation show no separable EM contribution; the shell's value is
+traceability and stability.
+
+**The in-loop de-commitment ablation sealed the attribution.** Same
+trajectories, three removals at once (plain-text sub-answers, no contract;
+fusion-only child panels; final answer as no_commit): **inloop_nocommit EM
+73.53 == dagv2's exact value**, above commit's 73.20. Paired comparisons:
+in-loop commitments +0.65 [−0.7, +2.0] (noise), grounding alone vs no loop
+**+4.90 [+1.3, +8.5] (significant, and by itself exact parity)**, full
+commitment +0.33 [−1.0, +1.6] (noise). Final attribution: what is
+indispensable is the query-planning × answer-conditioned-grounding pair; the
+commitment machinery's real station is an anti-hallucination guardrail for
+*small* sub-answer models (dagv2's 8B needs it; 27B does not). **Our pipeline
+settles into a form simpler than dagv2's:** NV dense + 4B fusion +
+query-planning/answer-conditioned retrieve–read loop (27B) + fusion-union
+final answer + elastic panel / routing valve — no commitment machinery.
+(`results/dag_match/dag_metrics_inloopnc.json`.)
 
 **Saveloop then made it cheaper, same architecture (4B gates only; 27B does
 all reasoning).** An elastic panel (k = clamp(count(P(rel) ≥ 0.9), 3, 20),

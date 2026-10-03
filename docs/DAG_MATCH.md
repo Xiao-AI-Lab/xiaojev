@@ -97,18 +97,17 @@ Residual gaps: musique's hard distractors hold citation precision at 75.3%
 deficit (−1 to −4 pp) lives there; 2wiki inference type trails −6.4 on n=31
 (small sample).
 
-**Where the gain actually sits (honest reading, combining the package result
-with the attribution table below):** the load-bearing piece is the
-answer-conditioned query rewriting (grounding) — it is the only component
-whose isolated absence collapses retrieval (−19 pp R@5 on 2wiki when
-sub-queries are planned *without* parent answers; decfirst probe). Chain
-injection measured ±0 and final-answer provenance curation ±0 as separable
-EM contributions. The planning / citation-contract / history shell is an
-engineering wrapper whose value is **traceability** (every sub-answer carries
-its provenance) and **stability** (strict contracts, 100% first-pass), not
-separable EM points. We therefore describe nodeloop as iterative RAG with
-answer-conditioned rewriting and tracked provenance — and do not claim a DAG
-or agentic contribution.
+**Where the gain actually sits (final attribution, after the in-loop
+de-commitment ablation below):** the answer-conditioned query rewriting
+(grounding) is not merely the main piece — **it is the only component with a
+significant isolated contribution** (+4.90 pp, CI [+1.3, +8.5]). Everything
+else in the shell is noise-level on EM: chain injection ±0, final-answer
+provenance curation ±0.33, in-loop citation commitments +0.65 (CIs all cross
+0). The commitment machinery's real role is an **anti-hallucination guardrail
+for small sub-answer models** — dagv2 needs it at 8B; at 27B it buys no
+measurable EM. We therefore describe nodeloop as iterative RAG with
+answer-conditioned rewriting, and (per the final pipeline below) we do not
+claim a DAG, commitment, or agentic contribution.
 
 **Disclosure:** dagv2 answers its sub-questions with an 8B completions model;
 our loop uses the 27B chat reader for them. Our `sources` commitments are
@@ -121,6 +120,52 @@ conditions queries on answers so far; refusal/gating/cost scenarios remain
 our unique advantage (the GATE_* line). The earlier statement that "the gap
 cannot be closed" referred to single-component patches — it is superseded by
 this result.
+
+## In-loop de-commitment ablation (the attribution capstone, 2wiki)
+
+Same trajectories as nodeloop (plans / retrievals / grounded queries reused),
+three removals at once: sub-answers as plain text (no sources contract, no
+validation), child panels as plain 4B-fusion top-20 (no inherited committed
+sources), final answer identical to no_commit (fusion union panel + same
+chain). 83 min, zero failures.
+
+| Arm | EM | F1 | Note |
+|---|---:|---:|---|
+| **inloop_nocommit (ablated)** | **73.53** | 81.22 | grounding + loop, no commitment machinery |
+| no_commit | 72.88 | 80.69 | + in-loop commitments |
+| commit | 73.20 | 81.02 | + final-answer curation (full commitment) |
+| fixed3_k20 | 68.63 | 75.96 | no loop |
+| dagv2 | 73.53 | 81.12 | — |
+
+Key comparisons (5000 paired bootstraps, ΔEM [95% CI]):
+
+- **In-loop commitment net: +0.65 [−0.7, +2.0] — not significant.**
+- **Grounding alone (vs no loop): +4.90 [+1.3, +8.5] — significant**, and by
+  itself enough for an *exact* tie with dagv2 (73.53 = 73.53).
+- Full-commitment margin (vs inloop_nocommit): +0.33 [−1.0, +1.6] — noise.
+
+**Final attribution (all musique/2wiki ablations converge here):**
+
+1. dagv2's advantage mechanism, decomposed to its lever: **query planning ×
+   answer-conditioned rewriting inside a retrieve–read loop** — alone worth
+   +4.9 pp and sufficient for exact parity on 2wiki. The earlier
+   "four-parts-indispensable" phrasing is corrected: what is indispensable is
+   the decomposition × grounding pair.
+2. **The commitment machinery (sources contracts + citation curation) is
+   noise-level end-to-end** (final curation ±0.33, in-loop +0.65; and the
+   earlier text-mention proxy was actively negative, −2.9 pp). Its real
+   station is the anti-hallucination guardrail around *small* sub-answer
+   models — meaningful for dagv2's 8B nodes, no net effect at 27B.
+3. **Our pipeline's final form is therefore simpler than dagv2's:** NV dense
+   + 4B fusion + query-planning/answer-conditioned retrieve–read loop (27B)
+   + fusion-union final answer + elastic panel / routing valve — no
+   commitment machinery, no significant EM difference from dagv2 in any
+   regime, lower tokens.
+4. Remaining deficits: musique deep-chain reader side (~1–2 pp, inside
+   noise) and 2wiki inference type (−6.4 pp, n=31).
+
+Artifacts: `results/dag_match/dag_metrics_inloopnc.json` (arms + paired
+comparisons).
 
 ## Saveloop: same architecture, 40% fewer tokens (2wiki)
 
@@ -221,16 +266,18 @@ trajectories:
 | Upfront planning + multi-channel union retrieval | **−7.2 pp** (decfirst_nochain 61.44 vs fixed3_k20 68.63) | negative asset alone: upfront-planned subqueries carry unresolved references ("the performer of X") that break retrieval; dagv2's sub-queries are *answer-conditioned* (each retrieves with parent answers already resolved). Evidence-guided iterative subqueries ("what is missing") beat upfront planning |
 | Provenance-priority panel curation | **−2.9 pp** (curpanel_nochain, CI excludes 0) | our proxy (title/answer-string mention) pins noise onto the panel (All@20 93.8% < 96.7% uncurated); dagv2 pins *explicitly cited* sources (boolean commitments from sub-answers) |
 
-**Conclusion of the attribution (user-ruled reading):** the EM-carrying
-component is the **answer-conditioned query rewriting** — planning
-sub-queries without it is actively harmful (−7.2 pp), and with it the package
-gain (+4.6–5.8 pp) is mostly attributable to grounding. History-in-context
-measured ±0 and provenance-driven curation ±0 as separable contributions; the
-planning/contract/history shell around grounding is an engineering wrapper
-whose value is traceability and stability, not isolatable EM. The naive
-reading "no subset closes the gap, only the joint structure does" is
-superseded: the nodeloop result is explained by grounding plus ordinary
-retrieve–read iteration.
+**Conclusion of the attribution (final, after the in-loop ablation above):**
+the only component with a significant isolated contribution is the
+**answer-conditioned query rewriting** — planning sub-queries without it is
+actively harmful (−7.2 pp), and grounding alone reaches +4.90 pp (CI
+[+1.3, +8.5]), enough for exact parity with dagv2. History-in-context
+measured ±0, provenance curation ±0.33, in-loop citation commitments +0.65 —
+all noise. The commitment machinery's real station is an anti-hallucination
+guardrail for *small* sub-answer models (dagv2's 8B), with no net effect at
+27B. The naive reading "no subset closes the gap, only the joint structure
+does" is superseded: what is indispensable is the query-planning × grounding
+pair inside an ordinary retrieve–read loop, and our final pipeline drops the
+commitment machinery entirely.
 
 ## Capability boundary (the takeaway)
 
@@ -248,11 +295,13 @@ retrieve–read iteration.
   Residuals: musique citation precision 75.3% under hard distractors, and
   2wiki inference-type −6.4 pp on n=31.
 - **What the boundary taught us:** the EM value travels with
-  answer-conditioned grounding inside an ordinary retrieve–read loop;
-  history-in-context and provenance curation add traceability/stability but
-  no separable EM. Single-point patches (budget +0.3, chain ±0, upfront
-  planning −7.2, proxy curation −2.9) cannot close the gap; conditioning
-  queries on answers-so-far inside the loop closed it in one step.
+  answer-conditioned grounding inside an ordinary retrieve–read loop — the
+  only component with a significant isolated effect (+4.90 pp); citation
+  contracts and provenance curation add traceability/stability but no
+  measurable EM at 27B (they are guardrails for small sub-answer models like
+  dagv2's 8B). Single-point patches (budget +0.3, chain ±0, upfront planning
+  −7.2, proxy curation −2.9) cannot close the gap; conditioning queries on
+  answers-so-far inside the loop closed it in one step.
 - Also measured: our probes run 3 rounds unconditionally (offline arm
   arbitration); the online gated arm averages 1.51–1.56 rounds.
 

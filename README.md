@@ -51,14 +51,15 @@ to hotpotqa and 2wikimultihopqa, where the gate is the strongest component
 heavy DAG pipeline on clean subsets the score is **1 win / 2 draws / 0
 losses**: we win outright on retrieval-reachable questions at roughly half
 the token cost, and our nodeloop — a structured iterative-RAG variant whose
-EM-carrying piece is answer-conditioned query rewriting (its
-planning/contract/history shell buys traceability and stability, not
-separable EM) — closed the retrieval-limited battlefields to statistical
-draws; the elastic-panel saveloop (same architecture, 27B reasoning only)
-made 2wiki an exact EM tie with an F1 win. One pipeline now plays all three
-fields with 34–58% token savings (operating rule: fields with
-committed-source precision < 95% use the no_commit arm) — full attribution in
-the [dag_match report](docs/DAG_MATCH.md).
+EM-carrying piece is answer-conditioned query rewriting alone (+4.9 pp
+significant; the citation-contract machinery measures noise at 27B and is
+really an anti-hallucination guardrail for small sub-answer models like
+dagv2's 8B, so the final pipeline drops it) — closed the retrieval-limited
+battlefields to statistical draws; the elastic-panel saveloop (same
+architecture, 27B reasoning only) made 2wiki an exact EM tie with an F1 win.
+One pipeline now plays all three fields with 34–58% token savings (operating
+rule: fields with committed-source precision < 95% use the no_commit arm) —
+full attribution in the [dag_match report](docs/DAG_MATCH.md).
 Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
 [dense gate re-test](rag_eval/GATE_DENSE_REPORT.md) ·
 [iterative RAG](rag_eval/ITER_REPORT.md) · [BM25 gate](rag_eval/GATE_REPORT.md).

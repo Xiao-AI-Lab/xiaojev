@@ -40,11 +40,12 @@ Qwen reader 生成。迭代检索是双刃剑——可答题 EM 从 40.6 升到 
 （各数据集 τ 自校准是设计意图而非调参，详见[迁移报告](rag_eval/TRANSFER_REPORT.md)）。
 与 dagv2 重型 DAG 管线在干净子集上对标的总比分是 **1 胜 2 平 0 负**：检索可达区间
 （hotpotqa 型）我们以约一半 token 成本反超；nodeloop 是迭代式 RAG 的结构化变体而非新范式
-——其 EM 增益主体来自答案条件化的 query 改写（grounding），规划/契约/历史外壳的价值在
-可追溯性与稳定性、不可分离为 EM——它把检索受限战场闭合到统计打平；弹性面板 saveloop
-（同架构、推理全程 27B）把 2wiki 打成 EM 精确打平、F1 反超——**一条通用管线打满三个战场**，
-按战场 token 省 34–58%（操作规则：承诺源精度 <95% 的战场只用 no_commit 臂）——完整归因见
-[dag_match 报告](docs/DAG_MATCH.md)。详见
+——消融定案：唯一显著项是答案条件化 query 改写（单独 +4.9pt 即精确追平），承诺机制全链路
+皆为噪声级，其真实定位是小模型节点回答的防幻觉护栏（dagv2 的 8B 需要、27B 不需要），
+故终版管线比 dagv2 更简、不再含承诺机制——它把检索受限战场闭合到统计打平；弹性面板
+saveloop（同架构、推理全程 27B）把 2wiki 打成 EM 精确打平、F1 反超——**一条通用管线打满
+三个战场**，按战场 token 省 34–58%（操作规则：承诺源精度 <95% 的战场只用 no_commit 臂）
+——完整归因见 [dag_match 报告](docs/DAG_MATCH.md)。详见
 [4B 融合](rag_eval/FUSION4B_REPORT.md) · [dense 门控复测](rag_eval/GATE_DENSE_REPORT.md) ·
 [迭代 RAG](rag_eval/ITER_REPORT.md) · [BM25 门控](rag_eval/GATE_REPORT.md)。
 其余模型指标使用 v4。TV 越低表示概率校准越好；
