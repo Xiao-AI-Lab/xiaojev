@@ -1,0 +1,102 @@
+{
+  "arms": {
+    "commit": {
+      "n": 293,
+      "em": 0.515358361774744,
+      "f1": 0.6098709431679984,
+      "delta_vs_dagv2": -0.051194539249146756,
+      "boot_dagv2": [
+        -0.09215017064846416,
+        -0.013651877133105802
+      ],
+      "delta_vs_nodeloop_baseline": -0.034129692832764506,
+      "boot_base": [
+        -0.06484641638225255,
+        -0.006825938566552901
+      ]
+    },
+    "no_commit": {
+      "n": 293,
+      "em": 0.5290102389078498,
+      "f1": 0.6235228203011043,
+      "delta_vs_dagv2": -0.03754266211604096,
+      "boot_dagv2": [
+        -0.07508532423208192,
+        0.0
+      ],
+      "delta_vs_nodeloop_baseline": -0.023890784982935155,
+      "boot_base": [
+        -0.051194539249146756,
+        0.0
+      ]
+    }
+  },
+  "cost": {
+    "nodeloop_baseline": {
+      "calls_27b_total": 1352,
+      "calls_per_q": 4.614334470989761,
+      "node_prompt_tokens_est": 2635632,
+      "node_prompt_tokens_per_q_est": 8995.331058020478,
+      "final_prompt_tokens": 1866339,
+      "total_prompt_tokens_per_q": 15365.088737201366
+    },
+    "saveloop": {
+      "calls_27b_total": 1352,
+      "calls_per_q": 4.614334470989761,
+      "node_prompt_tokens": 1249490,
+      "node_prompt_tokens_per_q": 4264.470989761092,
+      "node_completion_tokens": 13762,
+      "final_prompt_tokens": 1872916,
+      "final_completion_tokens": 5949,
+      "total_prompt_tokens_per_q": 10656.675767918088,
+      "mean_panel_k": 8.325065274151436
+    },
+    "prompt_token_reduction_pct": 30.643578112786596,
+    "node_prompt_reduction_pct": 52.592395296460204
+  },
+  "hop": {
+    "commit": {
+      "2hop": {
+        "n": 166,
+        "em": 0.572289156626506,
+        "dagv2_em": 0.6325301204819277
+      },
+      "3hop": {
+        "n": 81,
+        "em": 0.5061728395061729,
+        "dagv2_em": 0.5432098765432098
+      },
+      "4hop": {
+        "n": 46,
+        "em": 0.32608695652173914,
+        "dagv2_em": 0.3695652173913043
+      }
+    },
+    "no_commit": {
+      "2hop": {
+        "n": 166,
+        "em": 0.5963855421686747,
+        "dagv2_em": 0.6325301204819277
+      },
+      "3hop": {
+        "n": 81,
+        "em": 0.48148148148148145,
+        "dagv2_em": 0.5432098765432098
+      },
+      "4hop": {
+        "n": 46,
+        "em": 0.3695652173913043,
+        "dagv2_em": 0.3695652173913043
+      }
+    }
+  },
+  "routing": {
+    "tau_route": 1.0,
+    "coverage_on_cal": 0.7346938775510204,
+    "routed_fraction": 0.0
+  },
+  "source_retention": {
+    "mean": 1.0,
+    "n": 681
+  }
+}

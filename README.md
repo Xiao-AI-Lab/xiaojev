@@ -24,7 +24,7 @@ autoregressive text generation.
 | RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **40.6% / 49.7%** |
 | Iterative RAG + gate | Answerable EM (3 rounds); unanswerable hallucination; mixed-traffic tokens | **52.5%; 6.9%; −73%** |
 | Cross-dataset transfer | Fusion ΔR@5 zero-tuning on musique / 2wiki / hotpotqa; gate AUC on hotpotqa / 2wiki | **+6.4 / +2.3 / +0.5 pp; 0.95 / 0.99** |
-| RAG vs DAG pipeline | Clean-subset EM Δ vs dagv2, musique / hotpotqa / 2wiki | **−1.0 / +3.0 / +0.0 (1W–2D–0L); tokens −34~−58% by field** |
+| RAG vs DAG pipeline | Clean-subset EM Δ vs dagv2, musique / hotpotqa / 2wiki | **−1.0 / +3.0 / +0.0 (1W–2D–0L); tokens −34~−58% by field, ≈−58% on 2wiki (routing + elastic panel combined)** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |

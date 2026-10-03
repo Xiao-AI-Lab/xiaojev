@@ -254,6 +254,58 @@ a solid iterative-RAG engineering result, not a new paradigm: the EM-carrying
 content is the answer-conditioned rewriting; the planning/contract/history
 shell buys traceability and stability.
 
+## Routing revived: a joint-feature classifier (2wiki)
+
+The single-signal gate (AUC 0.669) had rightly killed routing; the oracle
+headroom (79.7% of questions answered identically by single and commit) said
+a better signal should exist. It does — with **joint features**: question
+type and form, dense retrieval score distribution (top-1/top-5/gap/entropy),
+4B fusion score distribution, the gate's P(answerable), and surface features
+of the single-round answer (length/empty/hedge words). A small logistic
+regression (numpy IRLS, L2, z-scored) trained on clean-98 calibration reaches
+**cal AUC 0.940 / 5-fold CV 0.839 ± 0.062** (no runaway overfit; the single
+gate alone is only 0.755, type features carry the rest — routing's
+feasibility boundary is question-type separability, not answerability).
+
+Out-of-sample admission (test 99, threshold 0.65 picked on cal): coverage
+**38.4%** (≥ 30% required) and the routed subset scores **EM_single =
+EM_commit = 84.2%, Δ = 0.00** (paired CI [−7.9%, +7.9%]) — admission passed.
+End-to-end merged arm on the full clean-306 (42.8% routed, zero fresh model
+calls): 27B calls 5.10 → **3.34/question (−34.4%)**, total prompt tokens
+**−35.7%**, merged EM 71.90 vs commit 73.20 — **−1.31, CI crosses 0**: exact
+parity on cal/test, slightly negative on dev. Honest shadow, recorded: the
+threshold is a tunable knob that must be re-calibrated periodically (0.65 was
+the cal-optimal coverage point; raise it for lower coverage / higher
+fidelity). Combined with the elastic panel on the looped questions, savings
+multiply: ≈ **−58% total tokens**. (`results/dag_match/route_classifier.json`,
+`routed_arm_eval.json`.)
+
+## Musique fine-tune attempt: a clean negative (coverage ≠ discrimination)
+
+The last open musique lever: adversarial hard-negative LoRA fine-tuning of
+the 4B scorer (600 steps on 24,736 hard-negative triples from the musique
+*train* split, zero-overlap with clean-293 re-verified; checkpoint selected
+on cal by the task-aligned panel metric). The target metric **was achieved**
+— panel All@20 +2.0 pp (step300: 0.8878 → 0.9082). And EM **went down**:
+no_commit 55.63 → 52.90 (−2.39), commit 54.95 → 51.54 (−3.41, significant),
+all hop tiers lower, the 4hop edge gone.
+
+Mechanism (the round's most valuable finding): the fine-tune raises coverage
+*by labeling more hard distractors as relevant* — at every threshold θ the
+fine-tuned model marks more documents relevant, so no threshold
+re-calibration can shrink the panel back to baseline size. On
+distractor-dense musique, "more complete coverage" means "more wrong evidence
+that looks right": **the reader's bottleneck there is discrimination, not
+coverage, and coverage gains do not map monotonically to EM**. The
+attribution path "panel coverage low → fine-tune coverage up → EM up" is
+therefore falsified on musique; the remaining −1.0 pp sits with reader-side
+discrimination of hard distractors, outside the reach of this series'
+cost/retrieval tools.
+
+**All five musique hard-attack rounds are now closed** (chain injection,
+budget, elastic panel, routing, fine-tuning) — the draw at 55.63 stands as
+the production number. Final score, fixed: **1 win, 2 draws, 0 losses**.
+
 ## Four-component attribution (isolated, per-component probes)
 
 Each dagv2 component was ablated into our stack one at a time on frozen

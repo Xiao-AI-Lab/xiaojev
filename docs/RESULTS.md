@@ -704,6 +704,31 @@ context construction + elastic panel + routing valve is one general
 iterative-RAG pipeline with no significant EM difference from dagv2 in any
 regime and a provably better cost side (34–58% savings by field).
 
+**Routing revived with joint features (2wiki).** Where the single gate's AUC
+(0.669) could not route, a small logistic classifier over question type +
+retrieval/fusion score distributions + gate P + answer-surface features
+reaches cal AUC 0.940 (5-fold 0.839 ± 0.062), passes out-of-sample admission
+(routed subset EM_single = EM_commit = 84.2%, Δ = 0.00, coverage 38.4%), and
+delivers the largest single cost cut so far: 27B calls **−34.4%**, total
+prompt tokens **−35.7%**, stacking with the elastic panel to ≈ **−58% total
+tokens**. Merged-arm EM 71.90 vs commit 73.20 (−1.31, CI crosses 0) — exact
+parity on cal/test, slightly negative on dev; the threshold is a knob to
+re-calibrate periodically (honest shadow, recorded). Routing's feasibility
+boundary is question-type separability, not answerability.
+(`results/dag_match/route_classifier.json`, `routed_arm_eval.json`.)
+
+**Musique fine-tune attempt: a clean negative.** Adversarial hard-negative
+LoRA fine-tuning of the 4B scorer (600 steps, 24,736 train-split triples,
+zero-overlap verified) hit its target metric (panel All@20 +2.0 pp) and
+*lost* EM everywhere (no_commit −2.39, commit −3.41 significant): the fine-tune
+marks more hard distractors relevant at every threshold, so panels cannot be
+shrunk back, and on distractor-dense musique "more complete coverage" means
+"more wrong evidence that looks right" — the reader's bottleneck there is
+discrimination, not coverage. All five musique hard-attack rounds (chain,
+budget, elastic panel, routing, fine-tuning) are now closed; the draw at
+55.63 is the production number, residual −1.0 pp attributed to reader-side
+discrimination and sealed as-is. (`results/dag_match/dag_metrics_saveloop_mqft.json`.)
+
 **Capability boundary (updated):** on retrieval-reachable questions we win at
 ~half the token cost; retrieval-limited multi-entity grounding is now an
 exact-EM tie (F1 win) at −39.9% tokens via the answer-conditioned loop +
