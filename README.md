@@ -24,11 +24,29 @@ autoregressive text generation.
 | RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **40.6% / 49.7%** |
 | Iterative RAG + gate | Answerable EM (3 rounds); unanswerable hallucination; mixed-traffic tokens | **52.5%; 6.9%; −73%** |
 | Cross-dataset transfer | Fusion ΔR@5 zero-tuning on musique / 2wiki / hotpotqa; gate AUC on hotpotqa / 2wiki | **+6.4 / +2.3 / +0.5 pp; 0.95 / 0.99** |
-| RAG vs DAG pipeline | Clean-subset EM Δ vs dagv2, musique / hotpotqa / 2wiki | **−1.0 / +3.0 / +0.0 (1W–2D–0L); tokens −34~−58% by field, ≈−58% on 2wiki (routing + elastic panel combined)** |
+| RAG vs DAG pipeline | Clean-subset score vs dagv2 (per-dataset table below) | **1W–2D–0L; tokens −34~−58%** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |
 | Inference | Single-decision p50 across domains, one RTX 3090 | **27.84–69.49 ms** |
+
+### Per-dataset scores vs dagv2 (clean subsets)
+
+| Dataset (clean subset) | dagv2 EM / F1 | Ours EM / F1 (best arm) | Δ EM [95% CI] | Verdict | Prompt tokens/q (ours) |
+|---|---:|---:|---|---|---|
+| musique (293) | 56.66 / 67.38 | 55.63 / 64.42 (saveloop no_commit) | −1.02 [−4.8, +2.4] | draw | 10,148 (−34.0% vs our full-panel loop) |
+| hotpotqa (299) | 63.21 / 77.35 | 66.22 / 80.01 (saveloop no_commit) | +3.01 [+0.0, +6.0] | win | 9,520 (−72.9% vs full loop) |
+| 2wiki (306) | 73.53 / 81.12 | 73.53 / 81.66 (saveloop commit) | +0.00 [−2.0, +2.0] | exact EM tie, F1 win | 11,860 (−39.9%); with routing 12,690/q and 3.34 calls/q (−34.4%); routing + elastic panel combined ≈ −58% |
+
+Clean subset = the contamination-free semantic-hash non-train split (seed
+20260922), audited per dataset; dagv2 trains nothing and is scored from its
+archived records on the same subsets. Numbers are the committed summary JSONs
+(`results/dag_match/`). hotpotqa's one-pipeline arm (66.22) is statistically
+identical to the single_k20 specialist (66.56, −0.33 CI crossing 0) — the
+routing calibration's "full bypass" answer for saturated fields. dagv2's
+measured cost reference: 12,933 LLM tokens and ~4.76 calls per question,
+averaged over its full musique archive. Full protocol and attribution:
+[dag_match report](docs/DAG_MATCH.md).
 
 Browser results use the separately adapted browser checkpoint and cover three
 local fixture tasks, including one repeated task. The fixture layout is present
