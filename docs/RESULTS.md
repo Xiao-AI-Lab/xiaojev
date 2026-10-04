@@ -736,6 +736,21 @@ elastic panel; gate/refusal/cost scenarios remain our unique advantage
 (§12–14). Full-1000 auxiliary tables contain our training questions and are
 marked contaminated/optimistic; headline numbers are clean subsets only.
 
+**The same stack beats HippoRAG v2 everywhere (3W–0D–0L).** Identical
+conditions (same reader, embeddings, corpora, metrics; HippoRAGv2 commit
+`474ae76`, zero-training, recomputed from archives with 0 definition-mismatch
+rows; summary JSON `results/dag_match/hipporagv2_match.json`; full write-up
+[HIPPORAGV2_MATCH.md](HIPPORAGV2_MATCH.md)):
+
+| Dataset (clean subset) | HippoRAG v2 EM / F1 | Ours EM / F1 | Δ EM [95% CI] |
+|---|---:|---:|---|
+| musique (293) | 37.20 / 48.71 | 55.63 / 64.42 | **+18.43 [+12.3, +24.2]** |
+| hotpotqa (299) | 62.88 / 75.69 | 66.22 / 80.01 | **+3.34 [−0.7, +7.7]** |
+| 2wiki (306) | 61.76 / 68.28 | 73.53 / 81.66 | **+11.76 [+7.5, +16.0]** |
+
+No losing hop or question type — including our historical weak spots (2wiki
+inference +22.58 [+6.5, +38.7], musique 4hop +15.22 [+4.3, +28.3]).
+
 ## Reproducibility notes
 
 - NanoJev rerun fidelity: re-executing the public NanoJev weights through our

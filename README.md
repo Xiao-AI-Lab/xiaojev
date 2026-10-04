@@ -24,29 +24,33 @@ autoregressive text generation.
 | RAG pipeline | MuSiQue test QA EM / F1, 101 questions, top-4 context | **40.6% / 49.7%** |
 | Iterative RAG + gate | Answerable EM (3 rounds); unanswerable hallucination; mixed-traffic tokens | **52.5%; 6.9%; −73%** |
 | Cross-dataset transfer | Fusion ΔR@5 zero-tuning on musique / 2wiki / hotpotqa; gate AUC on hotpotqa / 2wiki | **+6.4 / +2.3 / +0.5 pp; 0.95 / 0.99** |
-| RAG vs DAG pipeline | Clean-subset score vs dagv2 (per-dataset table below) | **1W–2D–0L; tokens −34~−58%** |
+| RAG vs HippoRAG v2 | Clean-subset EM Δ, musique / hotpotqa / 2wiki | **+18.4 / +3.3 / +11.8 (3W–0D–0L)** |
 | Evidence assessment | Semantic test accuracy, 2,384 decisions | **83.52%** |
 | Game policies | Weighted macro success, test / OOD | **53.26% / 26.72%** |
 | Probabilistic reasoning | Probability test accuracy / mean TV, 8,145 decisions | **85.62% / 0.1264** |
 | Inference | Single-decision p50 across domains, one RTX 3090 | **27.84–69.49 ms** |
 
-### Per-dataset scores vs dagv2 (clean subsets)
+### Per-dataset scores vs HippoRAG v2 (clean subsets)
 
-| Dataset (clean subset) | dagv2 EM / F1 | Ours EM / F1 (best arm) | Δ EM [95% CI] | Verdict | Prompt tokens/q (ours) |
+| Dataset (clean subset) | HippoRAG v2 EM / F1 | Ours EM / F1 (best arm) | Δ EM [95% CI] | Verdict | Prompt tokens/q (ours) |
 |---|---:|---:|---|---|---|
-| musique (293) | 56.66 / 67.38 | 55.63 / 64.42 (saveloop no_commit) | −1.02 [−4.8, +2.4] | draw | 10,148 (−34.0% vs our full-panel loop) |
-| hotpotqa (299) | 63.21 / 77.35 | 66.22 / 80.01 (saveloop no_commit) | +3.01 [+0.0, +6.0] | win | 9,520 (−72.9% vs full loop) |
-| 2wiki (306) | 73.53 / 81.12 | 73.53 / 81.66 (saveloop commit) | +0.00 [−2.0, +2.0] | exact EM tie, F1 win | 11,860 (−39.9%); with routing 12,690/q and 3.34 calls/q (−34.4%); routing + elastic panel combined ≈ −58% |
+| musique (293) | 37.20 / 48.71 | 55.63 / 64.42 (saveloop no_commit) | +18.43 [+12.3, +24.2] | decisive win | 10,148 (−34.0% vs our full-panel loop) |
+| hotpotqa (299) | 62.88 / 75.69 | 66.22 / 80.01 (saveloop no_commit) | +3.34 [−0.7, +7.7] | win (CI touches 0) | 9,520 (−72.9% vs full loop) |
+| 2wiki (306) | 61.76 / 68.28 | 73.53 / 81.66 (saveloop commit) | +11.76 [+7.5, +16.0] | decisive win | 11,860 (−39.9%); with routing 12,690/q and 3.34 calls/q (−34.4%); routing + elastic panel combined ≈ −58% |
 
 Clean subset = the contamination-free semantic-hash non-train split (seed
-20260922), audited per dataset; dagv2 trains nothing and is scored from its
-archived records on the same subsets. Numbers are the committed summary JSONs
-(`results/dag_match/`). hotpotqa's one-pipeline arm (66.22) is statistically
-identical to the single_k20 specialist (66.56, −0.33 CI crossing 0) — the
-routing calibration's "full bypass" answer for saturated fields. dagv2's
-measured cost reference: 12,933 LLM tokens and ~4.76 calls per question,
-averaged over its full musique archive. Full protocol and attribution:
-[dag_match report](docs/DAG_MATCH.md).
+20260922), audited per dataset. Identical conditions on both sides: same
+reader (Qwen3.8-27B), embeddings (NV-Embed-v2), corpora, and metrics;
+HippoRAG v2 (commit `474ae76`) trains nothing and is recomputed from its
+archived records with 0 definition-mismatch rows. No losing hop or question
+type — including our historical weak spots (2wiki inference +22.6, musique
+4hop +15.2). Numbers are the committed summary JSONs (`results/dag_match/`).
+hotpotqa's one-pipeline arm (66.22) is statistically identical to the
+single_k20 specialist (66.56, −0.33 CI crossing 0) — the routing
+calibration's "full bypass" answer for saturated fields. Details:
+[HippoRAG v2 report](docs/HIPPORAGV2_MATCH.md). Against the heavier DAG
+pipeline dagv2 the same stack scores **1W–2D–0L** (musique/hotpotqa/2wiki
+−1.0 / +3.0 / +0.0) — see [docs/DAG_MATCH.md](docs/DAG_MATCH.md).
 
 Browser results use the separately adapted browser checkpoint and cover three
 local fixture tasks, including one repeated task. The fixture layout is present
@@ -65,19 +69,12 @@ Unanswerable cases are synthetic (gold documents removed), because the local
 gold set is fully answerable. The musique configuration transfers zero-tuning
 to hotpotqa and 2wikimultihopqa, where the gate is the strongest component
 (per-dataset τ self-calibration by design; details:
-[transfer report](rag_eval/TRANSFER_REPORT.md)). Benchmarked against dagv2's
-heavy DAG pipeline on clean subsets the score is **1 win / 2 draws / 0
-losses**: we win outright on retrieval-reachable questions at roughly half
-the token cost, and our nodeloop — a structured iterative-RAG variant whose
-EM-carrying piece is answer-conditioned query rewriting alone (+4.9 pp
-significant; the citation-contract machinery measures noise at 27B and is
-really an anti-hallucination guardrail for small sub-answer models like
-dagv2's 8B, so the final pipeline drops it) — closed the retrieval-limited
-battlefields to statistical draws; the elastic-panel saveloop (same
-architecture, 27B reasoning only) made 2wiki an exact EM tie with an F1 win.
-One pipeline now plays all three fields with 34–58% token savings (operating
-rule: fields with committed-source precision < 95% use the no_commit arm) —
-full attribution in the [dag_match report](docs/DAG_MATCH.md).
+[transfer report](rag_eval/TRANSFER_REPORT.md)). The same stack beats
+HippoRAG v2 on all three clean subsets (table above) and ties dagv2's heavier
+DAG pipeline (**1W–2D–0L**; the nodeloop retrieve–read loop's EM-carrying
+piece is answer-conditioned query rewriting, the citation-contract machinery
+is a small-model guardrail we drop at 27B) — full attribution in
+[docs/DAG_MATCH.md](docs/DAG_MATCH.md).
 Details: [4B fusion](rag_eval/FUSION4B_REPORT.md) ·
 [dense gate re-test](rag_eval/GATE_DENSE_REPORT.md) ·
 [iterative RAG](rag_eval/ITER_REPORT.md) · [BM25 gate](rag_eval/GATE_REPORT.md).
